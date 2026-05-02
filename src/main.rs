@@ -7,8 +7,14 @@ use std::io::{BufRead, BufReader};
 mod builtins;
 
 fn main() {
-    let file = "test.sh";
-    let f = File::open(file).unwrap();
+    let mut args = std::env::args_os();
+    args.next();
+    
+    let path = match args.next() {
+        Some(p) => p,
+        None => return,
+    };
+    let f = File::open(&path).unwrap();
     
     let mut reader = BufReader::new(f);
 
@@ -28,6 +34,16 @@ fn main() {
             }
         } else if line.starts_with("pwd") {
             let _ = builtins::pwd::main(&mut lock);
+        } else if line.starts_with("cd") {
+            let dir = line.trim_start_matches("cd ");
+            let dir = dir.trim_end_matches("\n");
+            if dir.starts_with('"') {
+                let dir = dir.trim_start_matches('"');
+                let dir = dir.trim_end_matches('"');
+                let _ = builtins::cd::main(dir);
+            } else {
+                let _ = builtins::cd::main(dir);
+            }
         }
         line.clear();
     }

@@ -1,6 +1,7 @@
 [package]
 name = "yom"
-version = "0.1.0"
+description = "A modern, easy to install competitor to the dash shell, built solely to execute files."
+version = "0.0.1"
 edition = "2024"
 
 [profile.release]
