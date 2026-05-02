@@ -1,6 +1,7 @@
 [package]
 name = "yom"
 description = "A modern, easy to install competitor to the dash shell, built solely to execute files."
+license = "MIT"
 version = "0.0.1"
 edition = "2024"
 
