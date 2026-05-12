@@ -2,7 +2,7 @@
 name = "yom"
 description = "A modern, easy to install competitor to the dash shell, built solely to execute files."
 license = "MIT"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 
 [profile.release]
@@ -11,3 +11,6 @@ lto = true
 codegen-units = 1
 panic = "abort"
 strip = true
+
+[dependencies]
+shell-words = "1.1.1"
