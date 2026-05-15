@@ -1,5 +1,7 @@
 use std::io::Write;
 
-pub fn main<W: Write>(str: &str, out: &mut W) {
+/// Standard shell `echo`
+#[inline]
+pub fn echo<W: Write>(str: &str, out: &mut W) {
     let _ = write!(out, "{str}\n");
 } 

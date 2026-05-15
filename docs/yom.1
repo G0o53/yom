@@ -1,0 +1,58 @@
+.TH YOM 1 "May 2026" "v0.1.0" "Yom User Manual"
+.SH NAME
+yom \- lightweight, fast Unix boot shell and script execution engine
+.SH SYNOPSIS
+.B yom
+[\fISCRIPT_FILE\fR]
+.br
+.SH DESCRIPTION
+.B yom
+is a lightweight, high-performance, script execution engine 
+written in Rust. Designed as a modern, memory-safe alternative to \fBdash\fR, 
+it delivers near-native scripting speed while eliminating the toolchain and 
+compilation headaches associated with traditional C-based shells.
+.PP
+When invoked with a \fISCRIPT_FILE\fR, \fByom\fR parses and executes the commands 
+contained within the file sequentially. If no arguments are provided, \fByom\fR 
+silently fails with exit code 0.
+.PP
+Because \fByom\fR compiles down to a single, zero-dependency static binary using a 
+safe instruction profile (\fBtarget-cpu=generic\fR), it is uniquely suited as a 
+drop-in execution processor inside minimal Unix environments, 
+containers, and custom \fBinitramfs\fR images (with extra tools).
+.PP
+.SH SYNTAX
+.B yom
+uses a \fIPOSIX-inspired\fR syntax that will be immediately familiar if you have ever
+written a bash script. To execute a command you do 
+.B /bin/ls
+to wait for it to finish
+.B & /bin/ls
+to continue with the script (ignoring the child when it becomes a zombie). And
+.B exec /bin/ls
+to morph 
+.B yom
+into
+.B ls
+.PP
+.B yom
+also has standard shell builtins such as:
+.nf
+.B echo \(dqtext\(dq
+to echo text back to you; read to give a prompt
+.B read \(dqprompt \(dq
+cd to change your directory,
+.B cd /path/
+exit to well... exit
+.B exit <code>
+and finally
+.B pwd
+to print your working directory.
+.fi
+.SH AUTHORS
+Maintained by G0o53 and the open-source community. 
+Development repository located at: \fIhttps://github.com/G0o53/yom\fR.
+.SH SEE ALSO
+.BR sh (1),
+.BR dash (1),
+.BR bash (1)

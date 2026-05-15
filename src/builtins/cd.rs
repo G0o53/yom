@@ -1,5 +1,6 @@
+/// Standerd shell `cd`
 #[inline]
-pub fn main(dir: &str) -> std::io::Result<()> {
+pub fn cd(dir: &str) -> std::io::Result<()> {
     std::env::set_current_dir(&dir)?;
     Ok(())
 }

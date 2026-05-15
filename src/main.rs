@@ -33,40 +33,43 @@ let path = match args.next() {
             if str.starts_with('"') && str.ends_with('"') {
                 let str = str.trim_start_matches('"');
                 let str = str.trim_end_matches('"');
-                builtins::echo::main(str, &mut lock);
+                builtins::echo::echo(str, &mut lock);
             } else {
-                builtins::echo::main(str, &mut lock);
+                builtins::echo::echo(str, &mut lock);
             }
         } else if line == "pwd\n" {
-            let _ = builtins::pwd::main(&mut lock);
+            let _ = builtins::pwd::pwd(&mut lock);
         } else if line.starts_with("cd ") {
             let dir = line.trim_start_matches("cd ");
             let dir = dir.trim_end_matches("\n");
-            if dir.starts_with('"') {
+            if dir.starts_with('"') && dir.ends_with('"') {
                 let dir = dir.trim_start_matches('"');
                 let dir = dir.trim_end_matches('"');
-                let _ = builtins::cd::main(dir);
+                let _ = builtins::cd::cd(dir);
             } else {
-                let _ = builtins::cd::main(dir);
+                let _ = builtins::cd::cd(dir);
             }
         } else if line == "exit\n" {
             let _ = builtins::exit::main(0);
         } else if line.starts_with("exit ") {
             let code: i32 = line.trim_start_matches("exit ").trim_end_matches("\n").parse().unwrap();
             let _ = builtins::exit::main(code);
-//        } else if line.starts_with("if "){
-            // time to do some massive brain coding
-//            let op = line.trim_start_matches("if ");
-//            print!("{op}");
-//            let op = op.trim_start_matches("[ ").trim_end_matches(" ]");
-//            print!("{op}");
-            
-//           let operators = ['!', '<', '=', '>'];
-//           if let Some(idx) = op.find(|c: char| operators.contains(&c)) {
-//                let tail = &line[idx..];
-//            }
         } else if line.starts_with("/") {
-            externals::entry::main(&line, &mut lock);
+            let _ = externals::entry::waitfor(&line);
+        } else if line.starts_with("& ") {
+            let _ = externals::entry::background(&line);
+        } else if line.starts_with("exec ") {
+            let _ = externals::entry::exec(&line);
+        } else if line.starts_with("read") {
+            let prompt = line.trim_start_matches("read");
+            let prompt = prompt.trim_end_matches("\n");
+            if prompt.starts_with('"') && prompt.ends_with('"') {
+                let prompt = prompt.trim_start_matches('"') ;
+                let prompt = prompt.trim_end_matches('"');
+                let _ = builtins::read::read(prompt, &mut lock); 
+            } else {
+                let _ = builtins::read::read(prompt, &mut lock);
+            }
         } else {
             exit(1);
         }
