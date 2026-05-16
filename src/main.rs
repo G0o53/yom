@@ -1,11 +1,12 @@
- #[cfg(not(unix))]
+#[cfg(not(unix))]
 compile_error!("YOM is available on UNIX-like systems only.");
+// Makes sure YOM dosn't compile on windows
 
 use std::io;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-mod builtins;
-mod externals;
+mod builtins; // adds all the builtins as a module
+mod externals; // adds all the functions for externals as a module
 use std::process::exit;
 
 fn main() {
@@ -24,56 +25,71 @@ let path = match args.next() {
     let stdout = io::stdout();
     let mut lock = stdout.lock();
     while reader.read_line(&mut line).unwrap() > 0 {
-        if line.starts_with("#") {
+        if line.starts_with("#") || line == "\n" || line == "" {
+            // ignores line
             line.clear();
             continue;
+
         } else if line.starts_with("echo ") {
-            let str = line.trim_start_matches("echo ");
-            let str = str.trim_end_matches("\n");
+            // echos the string back to you
+            let str = line.strip_prefix("echo ").unwrap(); // removes the string "echo " from the start
+            let str = str.strip_suffix("\n").unwrap_or(str); // removes the newline from the end and shadows the old str
             if str.starts_with('"') && str.ends_with('"') {
-                let str = str.trim_start_matches('"');
-                let str = str.trim_end_matches('"');
-                builtins::echo::echo(str, &mut lock);
+                // does a bit of trimming for quotes
+                let str = str.strip_prefix('"').unwrap();
+                let str = str.strip_suffix('"').unwrap();
+                builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
             } else {
-                builtins::echo::echo(str, &mut lock);
+                builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
             }
+
         } else if line == "pwd\n" {
-            let _ = builtins::pwd::pwd(&mut lock);
+            // echos the current working directory to stdout
+            let _ = builtins::pwd::pwd(&mut lock); // calls pwd (handing stdout lock over)
+
         } else if line.starts_with("cd ") {
-            let dir = line.trim_start_matches("cd ");
-            let dir = dir.trim_end_matches("\n");
+            let dir = line.strip_prefix("cd ").unwrap(); // trims the "cd " string from the dir
+            let dir = dir.strip_suffix("\n").unwrap_or(dir); // trims the newline at the end of cd (shadowing the variable)
             if dir.starts_with('"') && dir.ends_with('"') {
-                let dir = dir.trim_start_matches('"');
-                let dir = dir.trim_end_matches('"');
-                let _ = builtins::cd::cd(dir);
+                let dir = dir.strip_prefix('"').unwrap(); // trims quotes from start shadowing old dir
+                let dir = dir.strip_suffix('"').unwrap(); // trims quotes from start shadowing old dir
+                let _ = builtins::cd::cd(dir); // calls cd 
             } else {
-                let _ = builtins::cd::cd(dir);
+                let _ = builtins::cd::cd(dir); // calls cd 
             }
+
         } else if line == "exit\n" {
-            let _ = builtins::exit::main(0);
+            let _ = builtins::exit::main(0); // calls exit on exit code 0
+
         } else if line.starts_with("exit ") {
-            let code: i32 = line.trim_start_matches("exit ").trim_end_matches("\n").parse().unwrap();
-            let _ = builtins::exit::main(code);
+            let code: i32 = line.trim_start_matches("exit ").trim_end_matches("\n").parse().unwrap(); // trims "exit " and the newline, then parses it into i32
+            let _ = builtins::exit::main(code); // executes exit on exit code specified in the file
+
         } else if line.starts_with("/") {
-            let _ = externals::entry::waitfor(&line);
+            let _ = externals::entry::waitfor(&line); // waits for the program to finish
+
         } else if line.starts_with("& ") {
-            let _ = externals::entry::background(&line);
+            let _ = externals::entry::background(&line); // backgrounds the program (ignoring the resulting zombie)
+
         } else if line.starts_with("exec ") {
-            let _ = externals::entry::exec(&line);
+            let _ = externals::entry::exec(&line); // changes yom into said program
+
         } else if line.starts_with("read") {
-            let prompt = line.trim_start_matches("read");
-            let prompt = prompt.trim_end_matches("\n");
+            let prompt = line.strip_prefix("read ").unwrap(); // removes the string "read " from the prompt
+            let prompt = prompt.strip_suffix("\n").unwrap_or(prompt); // removes the newline from the prompt, shadowing the old prompt 
             if prompt.starts_with('"') && prompt.ends_with('"') {
-                let prompt = prompt.trim_start_matches('"') ;
-                let prompt = prompt.trim_end_matches('"');
-                let _ = builtins::read::read(prompt, &mut lock); 
+                let prompt = prompt.strip_prefix('"').unwrap(); // trims quotes
+                let prompt = prompt.strip_suffix('"').unwrap(); // trims quotes while shadowing old prompt
+                let _ = builtins::read::read(prompt, &mut lock); // executes read
             } else {
-                let _ = builtins::read::read(prompt, &mut lock);
+                let _ = builtins::read::read(prompt, &mut lock); // executes read
             }
+
         } else {
             exit(1);
         }
+
         line.clear();
     }
-    return;
+    exit(0);
 }

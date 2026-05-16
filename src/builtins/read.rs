@@ -10,6 +10,6 @@ pub fn read<W: Write>(prompt: &str, out: &mut W) -> String {
     io::stdin()
         .read_line(&mut buffer)
         .expect("Failed to read line from stdin");
-    buffer = buffer.trim_end_matches("\n").to_string();
+    buffer = buffer.strip_suffix("\n").unwrap_or(&buffer).to_string();
     buffer
 }
