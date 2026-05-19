@@ -89,20 +89,20 @@ let path = match args.next() {
             }
 
         } else if line == "exit\n" {
-            let _ = builtins::exit::main(0); // calls exit on exit code 0
+            builtins::exit::exit(0); // calls exit on exit code 0
 
         } else if line.starts_with("exit ") {
             let code: i32 = line.trim_start_matches("exit ").trim_end_matches("\n").parse().unwrap(); // trims "exit " and the newline, then parses it into i32
-            let _ = builtins::exit::main(code); // executes exit on exit code specified in the file
+            builtins::exit::exit(code); // executes exit on exit code specified in the file
 
         } else if line.starts_with("/") {
-            let _ = externals::entry::waitfor(&line); // waits for the program to finish
+            externals::entry::waitfor(&line); // waits for the program to finish
 
         } else if line.starts_with("& ") {
             let _ = externals::entry::background(&line); // backgrounds the program (ignoring the resulting zombie)
 
         } else if line.starts_with("exec ") {
-            let _ = externals::entry::exec(&line); // changes yom into said program
+            externals::entry::exec(&line); // changes yom into said program
 
         } else if line.starts_with("read") {
             let prompt = line.strip_prefix("read ").unwrap(); // removes the string "read " from the prompt

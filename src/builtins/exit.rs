@@ -6,6 +6,6 @@
 /// ╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝   
 /// Exits with given exit code
 #[inline]
-pub fn main(code: i32) {
+pub fn exit(code: i32) {
     std::process::exit(code);
 }
