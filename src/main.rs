@@ -35,11 +35,11 @@ fn main() {
     let mut args = std::env::args_os();
     args.next();
     
-let path = match args.next() {
+    let path = match args.next() {
         Some(p) => p,
         None => return,
     };
-    let f = File::open(&path).unwrap();
+    let f = File::open(&path).expect("Expected file");
     
     let mut reader = BufReader::new(f);
 
