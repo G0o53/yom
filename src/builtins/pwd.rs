@@ -6,8 +6,6 @@ use std::io::Write;
 /// ██╔═══╝ ██║███╗██║██║  ██║
 /// ██║     ╚███╔███╔╝██████╔╝
 /// ╚═╝      ╚══╝╚══╝ ╚═════╝ 
-                          
-
 /// Standard shell `pwd`
 #[inline]
 pub fn pwd<W: Write>(out: &mut W) -> std::io::Result<()> {
