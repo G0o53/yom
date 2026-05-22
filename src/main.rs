@@ -48,12 +48,12 @@ fn main() {
     let mut lock = stdout.lock();
     while reader.read_line(&mut line).unwrap() > 0 {
 
-    // ███████╗██╗   ██╗ █████╗ ██╗     
-    // ██╔════╝██║   ██║██╔══██╗██║     
-    // █████╗  ██║   ██║███████║██║     
-    // ██╔══╝  ╚██╗ ██╔╝██╔══██║██║     
-    // ███████╗ ╚████╔╝ ██║  ██║███████╗
-    // ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝
+// ███████╗██╗   ██╗ █████╗ ██╗     
+// ██╔════╝██║   ██║██╔══██╗██║     
+// █████╗  ██║   ██║███████║██║     
+// ██╔══╝  ╚██╗ ██╔╝██╔══██║██║     
+// ███████╗ ╚████╔╝ ██║  ██║███████╗
+// ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝
 
         if line.starts_with("#") || line == "\n" || line == "" {
             // ignores line
@@ -69,13 +69,18 @@ fn main() {
                 let str = str.strip_prefix('"').unwrap();
                 let str = str.strip_suffix('"').unwrap();
                 builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
+                line.clear();
+                continue;
             } else {
                 builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
+                line.clear();
+                continue;
             }
-
         } else if line == "pwd\n" {
             // echos the current working directory to stdout
             let _ = builtins::pwd::pwd(&mut lock); // calls pwd (handing stdout lock over)
+            line.clear();
+            continue;
 
         } else if line.starts_with("cd ") {
             let dir = line.strip_prefix("cd ").unwrap(); // trims the "cd " string from the dir
@@ -84,25 +89,40 @@ fn main() {
                 let dir = dir.strip_prefix('"').unwrap(); // trims quotes from start shadowing old dir
                 let dir = dir.strip_suffix('"').unwrap(); // trims quotes from start shadowing old dir
                 let _ = builtins::cd::cd(dir); // calls cd 
+                line.clear();
+                continue;
             } else {
                 let _ = builtins::cd::cd(dir); // calls cd 
+                line.clear();
+                continue;
             }
 
         } else if line == "exit\n" {
             builtins::exit::exit(0); // calls exit on exit code 0
+            line.clear();
+            continue;
 
         } else if line.starts_with("exit ") {
-            let code: i32 = line.trim_start_matches("exit ").trim_end_matches("\n").parse().unwrap(); // trims "exit " and the newline, then parses it into i32
+            let code = line.strip_prefix("exit ").unwrap();
+            let code: i32 = code.strip_suffix("\n").unwrap_or(code).parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
             builtins::exit::exit(code); // executes exit on exit code specified in the file
+            line.clear();
+            continue;
 
         } else if line.starts_with("/") {
             externals::entry::waitfor(&line); // waits for the program to finish
+            line.clear();
+            continue;
 
         } else if line.starts_with("& ") {
             let _ = externals::entry::background(&line); // backgrounds the program (ignoring the resulting zombie)
+            line.clear();
+            continue;
 
         } else if line.starts_with("exec ") {
             externals::entry::exec(&line); // changes yom into said program
+            line.clear();
+            continue;
 
         } else if line.starts_with("read") {
             let prompt = line.strip_prefix("read ").unwrap(); // removes the string "read " from the prompt
@@ -111,15 +131,18 @@ fn main() {
                 let prompt = prompt.strip_prefix('"').unwrap(); // trims quotes
                 let prompt = prompt.strip_suffix('"').unwrap(); // trims quotes while shadowing old prompt
                 let _ = builtins::read::read(prompt, &mut lock); // executes read
+                line.clear();
+                continue;
             } else {
                 let _ = builtins::read::read(prompt, &mut lock); // executes read
+                line.clear();
+                continue;
             }
 
         } else {
             exit(1);
         }
 
-        line.clear();
     }
     exit(0);
 }

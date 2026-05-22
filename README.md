@@ -12,3 +12,5 @@ echo "It can even match dash in performance."
 ## Why use YOM?
 As we all know, all debian-based distros inherit `dash`... but what about other distros? Well thats when `yom` comes into play, by being easy to install everywhere that
 Rust runs.
+
+doccumentation is available at `docs/yom.1`
