@@ -1,13 +1,13 @@
-.TH YOM 1 "May 2026" "v0.1.14" "YOM User Manual"
+.TH YOM 1 "2026-05-26" "v0.1.15" "YOM User Manual"
 .SH NAME
-yom \- lightweight, fast Unix boot shell and script execution engine
+yom \- lightweight, non-interactive micro-shell and systems glue
 .SH SYNOPSIS
 .B yom
 [\fISCRIPT_FILE\fR]
 .br
 .SH DESCRIPTION
 .B yom
-is a lightweight, high-performance, script execution engine 
+is a lightweight, high-performance, micro-shell and systems glue 
 written in Rust. Designed as a modern, memory-safe alternative to \fBdash\fR, 
 it delivers near-native scripting speed while eliminating the toolchain and 
 compilation headaches associated with traditional C-based shells.
@@ -16,31 +16,29 @@ When invoked with a \fISCRIPT_FILE\fR, \fByom\fR parses and executes the command
 contained within the file sequentially. If no arguments are provided, \fByom\fR 
 silently fails with exit code 0.
 .PP
-Because \fByom\fR compiles down to a single, zero-dependency static binary using a 
-safe instruction profile (\fBtarget-cpu=generic\fR), it is uniquely suited as a 
-drop-in execution processor inside minimal Unix environments, 
-containers, and custom \fBinitramfs\fR images (with extra tools).
-.PP
+Because \fByom\fR compiles down to a single, static binary, it can be used 
+drop-in execution processor inside minimal Unix environments, containers, 
+and custom \fBinitramfs\fR images (with extra tools).
 .SH SYNTAX
 .B yom
 uses a \fIPOSIX-inspired\fR syntax that will be immediately familiar if you have ever
 written a bash script. To execute a command you do 
-.B /bin/ls
+.B /bin/program
 to wait for it to finish
-.B & /bin/ls
+.B & /bin/program
 to continue with the script (ignoring the child when it becomes a zombie). And
-.B exec /bin/ls
+.B exec /bin/program
 to morph 
 .B yom
-into
-.B ls
+into the program.
 .PP
 .B yom
-also has standard shell builtins such as:
+also has most standard shell builtins:
 .nf
 .B echo \(dqtext\(dq
-to echo text back to you; read to give a prompt
+to echo text back to you
 .B read \(dqprompt \(dq
+read to give a prompt.
 cd to change your directory,
 .B cd /path/
 exit to well... exit
@@ -51,9 +49,9 @@ to print your working directory.
 .fi
 .SH NOTES
 .B yom
-is very picky about indentation; if you use any indentation, it will explode, 
-it will also explode if it is at the end of a line
-of a line
+is allergic to indentation; if you use any indentation, it will explode, 
+or it will cause weird behaviour, it also doesn't like anything at the
+end of a line
 .SH AUTHORS
 Maintained by G0o53 and the open-source community. 
 Development repository located at: \fIhttps://github.com/G0o53/yom\fR.
