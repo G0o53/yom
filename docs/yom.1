@@ -1,4 +1,4 @@
-.TH YOM 1 "2026-05-26" "v0.1.15" "YOM User Manual"
+.TH YOM 1 "2026-05-28" "v0.2.0" "YOM User Manual"
 .SH NAME
 yom \- lightweight, non-interactive micro-shell and systems glue
 .SH SYNOPSIS
@@ -25,7 +25,7 @@ uses a \fIPOSIX-inspired\fR syntax that will be immediately familiar if you have
 written a bash script. To execute a command you do 
 .B /bin/program
 to wait for it to finish
-.B & /bin/program
+.B /bin/program &
 to continue with the script (ignoring the child when it becomes a zombie). And
 .B exec /bin/program
 to morph 
@@ -34,7 +34,6 @@ into the program.
 .PP
 .B yom
 also has most standard shell builtins:
-.nf
 .B echo \(dqtext\(dq
 to echo text back to you
 .B read \(dqprompt \(dq
@@ -46,12 +45,17 @@ exit to well... exit
 and finally
 .B pwd
 to print your working directory.
-.fi
 .SH NOTES
 .B yom
 is allergic to indentation; if you use any indentation, it will explode, 
 or it will cause weird behaviour, it also doesn't like anything at the
-end of a line
+end of a line.
+.PP
+If you want to pass
+.B &
+as an argument, surround it in quotes like this:
+.B \(dq&\(dq
+then you can run it with & as an argument.
 .SH AUTHORS
 Maintained by G0o53 and the open-source community. 
 Development repository located at: \fIhttps://github.com/G0o53/yom\fR.

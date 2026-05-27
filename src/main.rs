@@ -111,14 +111,22 @@ fn main() {
             continue;
 
         } else if line.starts_with("/") {
-            externals::entry::waitfor(line.as_str()); // waits for the program to finish
-            line.clear();
-            continue;
+            print!("{line}");
+            if line.ends_with(" &\n") {
+                externals::entry::background(line.strip_suffix(" &\n").unwrap()); // lets the program continue (ignoring the zombie)
+                line.clear();
+                continue;
 
-        } else if line.starts_with("& ") {
-            let _ = externals::entry::background(line.as_str()); // backgrounds the program (ignoring the resulting zombie)
-            line.clear();
-            continue;
+            } else if line.ends_with(" &") {
+                externals::entry::background(line.strip_suffix(" &").unwrap());
+                line.clear();
+                continue;
+
+            } else {
+                externals::entry::waitfor(line.as_str()); // waits for the program to finish
+                line.clear();
+                continue;
+            }
 
         } else if line.starts_with("exec ") {
             externals::entry::exec(line.as_str()); // changes yom into said program

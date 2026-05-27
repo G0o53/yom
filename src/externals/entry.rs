@@ -34,18 +34,17 @@ pub fn waitfor(path: &str) {
 /// ██╔══██╗██╔══██║██║     ██╔═██╗ ██║   ██║██╔══██╗██║   ██║██║   ██║██║╚██╗██║██║  ██║
 /// ██████╔╝██║  ██║╚██████╗██║  ██╗╚██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝
 /// ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝                                                                                  
-/// This function takes the entire line,
+/// This function needs the end cleaned,
 /// it does not wait for the child
 /// created to finish; in the main 
 /// function, it ignores the returned
 /// Child, use it for ephermal scripts
 /// mainly instead of using it for 
-/// long running scripts.
+/// eternal scripts.
 #[inline]
 pub fn background(command: &str) -> Child {
-    let path = command.trim_start_matches("& ");
 
-    let split = shell_words::split(path).expect("Invalid command syntax");
+    let split = shell_words::split(command).expect("Invalid command syntax");
     let program = &split[0];
     let args = &split[1..];
 
