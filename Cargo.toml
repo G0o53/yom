@@ -2,8 +2,8 @@
 name = "yom"
 description = "A modern, easy to install competitor to the dash shell, built solely to execute files."
 license = "MIT"
-version = "0.2.1"
-readme = "README"
+version = "0.2.2"
+readme = "README.txt"
 edition = "2024"
 repository = "https://github.com/G0o53/yom"
 
