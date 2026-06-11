@@ -60,7 +60,7 @@ fn main() {
             line.clear();
             continue;
 
-        } else if line.starts_with("/") {
+        } else if line.starts_with("/") || line.starts_with("$") {
             if line.ends_with(" &\n") {
                 externals::entry::background(line.strip_suffix(" &\n").unwrap()); // lets the program continue (ignoring the zombie)
                 line.clear();
@@ -77,24 +77,37 @@ fn main() {
                 continue;
             }
 
-        } else if line.starts_with("exec ") {
-            externals::entry::exec(line.as_str()); // changes yom into said program
-            line.clear();
-            continue;
-
-        } else if line.starts_with("echo ") {
-            // echos the string back to you
-            let str = line.strip_prefix("echo ").unwrap(); // removes the string "echo " from the start
-            let str = str.strip_suffix("\n").unwrap_or(str); // removes the newline from the end and shadows the old str
-            if str.starts_with('"') && str.ends_with('"') {
-                // does a bit of trimming for quotes
-                let str = str.strip_prefix('"').unwrap();
-                let str = str.strip_suffix('"').unwrap();
-                builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
+        } else if line.starts_with('e') {
+            if line.starts_with("exec ") {
+                externals::entry::exec(line.as_str()); // changes yom into said program
                 line.clear();
                 continue;
-            } else {
-                builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
+
+            } else if line.starts_with("echo ") {
+                // echos the string back to you
+                let str = line.strip_prefix("echo ").unwrap(); // removes the string "echo " from the start
+                let str = str.strip_suffix("\n").unwrap_or(str); // removes the newline from the end and shadows the old str
+                if str.starts_with('"') && str.ends_with('"') {
+                    // does a bit of trimming for quotes
+                    let str = str.strip_prefix('"').unwrap();
+                    let str = str.strip_suffix('"').unwrap();
+                    builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
+                    line.clear();
+                    continue;
+                } else {
+                    builtins::echo::echo(str, &mut lock); // calls echo (handing the stdout lock over)
+                    line.clear();
+                    continue;
+                }
+            } else if line.starts_with ("export ") {
+                let tmp = line.strip_prefix("export ").unwrap();
+                
+                if let Some((name, data)) = tmp.split_once('=') {
+                    unsafe {
+                        let data = data.strip_suffix("\n").unwrap_or(data);
+                        std::env::set_var(name, data);
+                    }
+                }
                 line.clear();
                 continue;
             }

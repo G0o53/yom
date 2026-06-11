@@ -1,6 +1,5 @@
 use std::process::Command;
 use std::process::Stdio;
-use std::process::Child;
 
 /// ██╗    ██╗ █████╗ ██╗████████╗███████╗ ██████╗ ██████╗ 
 /// ██║    ██║██╔══██╗██║╚══██╔══╝██╔════╝██╔═══██╗██╔══██╗
@@ -16,16 +15,30 @@ pub fn waitfor(path: &str) {
     let split = shell_words::split(path).expect("Invalid command syntax");
     let program = &split[0];
     let args = &split[1..];
+    if program.starts_with("$") {
+        let program = program.strip_prefix("$").unwrap();
 
-    let mut child = Command::new(program)
-        .args(args)
-        .stdin(Stdio::inherit())
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .spawn()
-        .expect("Failed to start");
+        let mut child = Command::new(std::env::var_os(program).unwrap())
+            .args(args)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("Failed to start");
 
-    child.wait().unwrap();
+        child.wait().unwrap();
+
+    } else {
+        let mut child = Command::new(program)
+            .args(args)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("Failed to start");
+
+        child.wait().unwrap();
+    }
 }
 
 /// ██████╗  █████╗  ██████╗██╗  ██╗ ██████╗ ██████╗  ██████╗ ██╗   ██╗███╗   ██╗██████╗ 
@@ -42,19 +55,32 @@ pub fn waitfor(path: &str) {
 /// mainly instead of using it for 
 /// eternal scripts.
 #[inline]
-pub fn background(command: &str) -> Child {
+pub fn background(command: &str) {
 
     let split = shell_words::split(command).expect("Invalid command syntax");
     let program = &split[0];
     let args = &split[1..];
+    if program.starts_with('$') {
+        let program = program.strip_prefix('$').unwrap();
 
-    Command::new(program)
-        .args(args)
-        .stdin(Stdio::inherit())
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .spawn()
-        .expect("Failed to start")
+         let _ = Command::new(std::env::var_os(program).unwrap())
+            .args(args)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("Failed to start");
+
+    } else {
+        let _ = Command::new(program)
+            .args(args)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("Failed to start");
+ 
+    }
 }
 
 /// ███████╗██╗  ██╗███████╗ ██████╗
@@ -69,16 +95,27 @@ pub fn background(command: &str) -> Child {
 /// given. It takes the whole line.
 #[inline]
 pub fn exec(command: &str){
-    let path = command.trim_start_matches("exec ");
+    let path = command.strip_prefix("exec ").unwrap();
     
     use std::process::Command;
     use std::os::unix::process::CommandExt;
 
     let split = shell_words::split(path).expect("Invalid command syntax");
     let program = &split[0];
-    let args = &split[1..];
+    if program.starts_with("$") {
+        let program = program.strip_prefix("$").unwrap();
+        let args = &split[1..];
 
-    let _ = Command::new(program)
-        .args(args)
-        .exec();
+        let _ = Command::new(std::env::var_os(program).unwrap())
+            .args(args)
+            .exec();
+
+    } else {
+        let args = &split[1..];
+
+        let _ = Command::new(program)
+            .args(args)
+            .exec();
+
+    }
 }

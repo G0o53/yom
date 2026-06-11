@@ -1,4 +1,4 @@
-.TH YOM 1 "2026-06-04" "v1.0.0" "YOM User Manual"
+.TH YOM 1 "2026-06-11" "v1.1.0" "YOM User Manual"
 .SH NAME
 yom \- lightweight, non-interactive micro-shell and systems glue
 .SH SYNOPSIS
@@ -42,9 +42,20 @@ cd to change your directory,
 .B cd /path/
 exit to well... exit
 .B exit <code>
-and finally
+then
 .B pwd
-to print your working directory.
+to print your working directory. and finally
+.B export <name>=<value>
+to create an env variable, that can be used in creating processes or in exec
+as follows:
+.br
+.B export ls=/bin/ls
+.br
+.B $ls
+.br
+.B $ls &
+.br
+.B exec $ls
 .SH NOTES
 .B yom
 is allergic to indentation; if you use any indentation, it will explode, 
