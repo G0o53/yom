@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use std::io::{self};
 
 /// ██████╗ ███████╗ █████╗ ██████╗ 
 /// ██╔══██╗██╔════╝██╔══██╗██╔══██╗
@@ -8,14 +8,13 @@ use std::io::{self, Write};
 /// ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
 /// Standard shell `read`
 #[inline]
-pub fn read<W: Write>(prompt: &str, out: &mut W) -> String {
-    let _ = write!(out, "{prompt}");
-    let _ = out.flush();
+pub fn read(var: &str) -> String {
+    let var = var.strip_prefix("$").expect("No $ before the variable");
+    let mut var: String = std::env::var(var).unwrap_or_else(|_| String::new());
 
-    let mut buffer = String::new();
     io::stdin()
-        .read_line(&mut buffer)
+        .read_line(&mut var)
         .expect("Failed to read line from stdin");
-    buffer = buffer.strip_suffix("\n").unwrap_or(&buffer).to_string();
-    buffer
+    var = var.strip_suffix("\n").unwrap_or(&var).to_string();
+    var
 }

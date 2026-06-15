@@ -27,8 +27,10 @@ compile_error!("YOM is available on UNIX-like systems only.");
 use std::io;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-mod builtins; // adds all the builtins as a module
+mod builtins;  // adds all the builtins as a module
 mod externals; // adds all the functions for externals as a module
+mod internals; // adds all dev functions as a module 
+use internals::lib::*; // adds the dev functions like they were written in this file
 use std::process::exit;
 
 fn main() {
@@ -47,6 +49,7 @@ fn main() {
     let stdout = io::stdout();
     let mut lock = stdout.lock();
     while reader.read_line(&mut line).unwrap() > 0 {
+        line = line.trim_start().to_string();
 
 // ███████╗██╗   ██╗ █████╗ ██╗     
 // ██╔════╝██║   ██║██╔══██╗██║     
@@ -56,6 +59,16 @@ fn main() {
 // ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝
 
         if line.starts_with("#") || line == "\n" || line == "" {
+            // ignores line
+            line.clear();
+            continue;
+
+        } else if line == "then\n" || line == "then" {
+            // ignores line 
+            line.clear();
+            continue;
+
+        } else if line == "fi\n" || line == "fi" {
             // ignores line
             line.clear();
             continue;
@@ -139,11 +152,17 @@ fn main() {
             if prompt.starts_with('"') && prompt.ends_with('"') {
                 let prompt = prompt.strip_prefix('"').unwrap(); // trims quotes
                 let prompt = prompt.strip_suffix('"').unwrap(); // trims quotes while shadowing old prompt
-                let _ = builtins::read::read(prompt, &mut lock); // executes read
+                let val = builtins::read::read(prompt); // executes read
+                unsafe {
+                    std::env::set_var(prompt, val);
+                }
                 line.clear();
                 continue;
             } else {
-                let _ = builtins::read::read(prompt, &mut lock); // executes read
+                let val = builtins::read::read(prompt); // executes read
+                unsafe {
+                    std::env::set_var(prompt, val);
+                }
                 line.clear();
                 continue;
             }    
@@ -157,6 +176,113 @@ fn main() {
             let code = line.strip_prefix("exit ").unwrap();
             let code: i32 = code.strip_suffix("\n").unwrap_or(code).parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
             builtins::exit::exit(code); // executes exit on exit code specified in the file
+            line.clear();
+            continue;
+
+        } else if line.starts_with("if ") {
+            let split = shell_words::split(&line).unwrap();
+            let left: &str = &split[2];
+            let operator: &str = &split[3];
+            let right: &str = &split[4];
+
+            if left.starts_with("$") || right.starts_with("$") {
+                let tmp = left.strip_prefix("$").unwrap_or(left);
+                let left = std::env::var_os(tmp).unwrap_or(tmp.into());
+                let left = left.to_str().expect("Not valid UTF-8");
+
+                let tmp = right.strip_prefix("$").unwrap_or(right);
+                let right = std::env::var_os(tmp).unwrap_or(tmp.into());
+                let right = right.to_str().expect("Not valid UTF-8");
+            
+                let val = str_or_int(left, right);
+                
+                if val == true {
+                    let left: i64 = left.parse().unwrap();
+                    let right: i64 = right.parse().unwrap();
+                    let val = ncmp(left, right, operator);
+            
+                    if val == true {
+                        line.clear();
+                        continue;
+                    } else {
+
+                        line.clear();
+                
+                        while reader.read_line(&mut line).unwrap() > 0 {
+                            let trimmed = line.strip_prefix("\n").unwrap_or(&line);
+                            if trimmed == "fi" {
+                                line.clear();
+                                break;
+                            }
+                                line.clear();
+                        }
+                    }
+
+                } else {
+                    let val = strcmp(left, right, operator);
+                    
+                    if val == true {
+                        line.clear();
+                        continue;
+                    } else {
+                        line.clear();
+                
+                        while reader.read_line(&mut line).unwrap() > 0 {
+                            let trimmed = line.strip_prefix("\n").unwrap_or(&line);
+                            if trimmed == "fi" {
+                                line.clear();
+                                break;
+                            }
+                                line.clear();
+                        }
+                    }
+                }
+
+            } else {
+                let val = str_or_int(left, right);
+                
+                if val == true {
+                    let left: i64 = left.parse().unwrap();
+                    let right: i64 = right.parse().unwrap();
+                    let val = ncmp(left, right, operator);
+            
+                    if val == true {
+                        line.clear();
+                        continue;
+                    } else {
+
+                        line.clear();
+                
+                        while reader.read_line(&mut line).unwrap() > 0 {
+                            let trimmed = line.strip_prefix("\n").unwrap_or(&line);
+                            if trimmed == "fi" {
+                                line.clear();
+                                break;
+                            }
+                                line.clear();
+                        }
+                    }
+
+                } else {
+                    let val = strcmp(left, right, operator);
+                    
+                    if val == true {
+                        line.clear();
+                        continue;
+                    } else {
+                        line.clear();
+                
+                        while reader.read_line(&mut line).unwrap() > 0 {
+                            let trimmed = line.strip_prefix("\n").unwrap_or(&line);
+                            if trimmed == "fi" {
+                                line.clear();
+                                break;
+                            }
+                                line.clear();
+                        }
+                    }
+                }
+            }
             line.clear();
             continue;
 

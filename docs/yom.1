@@ -1,4 +1,4 @@
-.TH YOM 1 "2026-06-11" "v1.1.0" "YOM User Manual"
+.TH YOM 1 "2026-06-15" "v1.2.0" "YOM User Manual"
 .SH NAME
 yom \- lightweight, non-interactive micro-shell and systems glue
 .SH SYNOPSIS
@@ -51,11 +51,28 @@ as follows:
 .br
 .B export ls=/bin/ls
 .br
-.B $ls
+.B \[dollar]ls
 .br
-.B $ls &
+.B \[dollar]ls &
 .br
-.B exec $ls
+.B exec \[dollar]ls
+.PP
+.B If Statements
+.B yom
+can do standard, POSIX-style 
+.B if 
+statements, you simply just do:
+.br
+.B if [ 1 == 1 ]
+.br
+.B then
+.br
+.B \ \ echo \(dqone is equal to one\(dq
+.br
+.B fi
+.PP
+It can also be done using export to create variables, just remember to
+append $ to the start or else you'll be comparing strings!
 .SH NOTES
 .B yom
 is allergic to indentation; if you use any indentation, it will explode, 
@@ -67,6 +84,26 @@ If you want to pass
 as an argument, surround it in quotes like this:
 .B \(dq&\(dq
 then you can run it with & as an argument.
+.PP
+in
+.B yom
+if you don't surround an if you do something like:
+.br
+.B if [ hello = world ]
+.br
+.B then
+.br
+.B \ \ echo \(dqhello equals to world! (this should be impossible)\(dq
+.br
+.B fi
+.br
+Then
+.B yom
+will treat 
+.B hello
+and
+.B world
+as strings unless they are just integers.
 .SH AUTHORS
 Maintained by G0o53 and the open-source community. 
 Development repository located at: \fIhttps://github.com/G0o53/yom\fR.
