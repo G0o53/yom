@@ -4,7 +4,8 @@ YOM
 https://github.com/G0o53/yom 
 https://crates.io/crates/yom
 
-YOM is the fast, almost scary fast, dash competitor (even though it can only execute scripts!). While dash is a nightmare to install, YOM isn't.
+YOM is the fast, almost scary fast, dash competitor (even though it can only 
+execute scripts!). While dash is a nightmare to install, YOM isn't.
     
     echo "This is yom"
     echo "It is FAST"
@@ -46,7 +47,8 @@ Just:
 Use Cases
 ---------
 
-YOM is useful for boot-scripts or system-scripts that run a list of tasks, without using control flow.
+YOM is useful for boot-scripts or system-scripts that run a list of tasks and 
+use very minimal (and if any) control flow.
 
 Documentation
 -------------

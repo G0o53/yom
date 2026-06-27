@@ -16,13 +16,10 @@
 #[cfg(not(unix))]
 compile_error!("YOM is available on UNIX-like systems only.");
 // Makes sure YOM dosn't compile on windows
-
-// ██╗███╗   ███╗██████╗  ██████╗ ██████╗ ████████╗███████╗
-// ██║████╗ ████║██╔══██╗██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝
-// ██║██╔████╔██║██████╔╝██║   ██║██████╔╝   ██║   ███████╗
-// ██║██║╚██╔╝██║██╔═══╝ ██║   ██║██╔══██╗   ██║   ╚════██║
-// ██║██║ ╚═╝ ██║██║     ╚██████╔╝██║  ██║   ██║   ███████║
-// ╚═╝╚═╝     ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+                                                  
+// ██ ██▄  ▄██ █████▄ ▄████▄ █████▄  ██████ ▄█████ 
+// ██ ██ ▀▀ ██ ██▄▄█▀ ██  ██ ██▄▄██▄   ██   ▀▀▀▄▄▄ 
+// ██ ██    ██ ██     ▀████▀ ██   ██   ██   █████▀                       
 
 use std::io;
 use std::fs::File;
@@ -30,13 +27,13 @@ use std::io::{BufRead, BufReader};
 mod builtins;  // adds all the builtins as a module
 mod externals; // adds all the functions for externals as a module
 mod internals; // adds all dev functions as a module 
-use internals::lib::*; // adds the dev functions like they were written in this file
+use internals::helpers::*; // adds the dev functions like they were written in this file
 use std::process::exit;
 
 fn main() {
     let mut args = std::env::args_os();
     args.next();
-    
+
     let path = match args.next() {
         Some(p) => p,
         None => return,
@@ -50,13 +47,10 @@ fn main() {
     let mut lock = stdout.lock();
     while reader.read_line(&mut line).unwrap() > 0 {
         line = line.trim_start().to_string();
-
-// ███████╗██╗   ██╗ █████╗ ██╗     
-// ██╔════╝██║   ██║██╔══██╗██║     
-// █████╗  ██║   ██║███████║██║     
-// ██╔══╝  ╚██╗ ██╔╝██╔══██║██║     
-// ███████╗ ╚████╔╝ ██║  ██║███████╗
-// ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝
+                                                        
+// ██████ ██  ██ ▄████▄ ██     
+// ██▄▄   ██▄▄██ ██▄▄██ ██     
+// ██▄▄▄▄  ▀██▀  ██  ██ ██████            
 
         if line.starts_with("#") || line == "\n" || line == "" {
             // ignores line
