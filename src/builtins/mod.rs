@@ -1,4 +1,4 @@
-// Copyright (C) 2026 G0o53
+// Copyright (C) 2026 The YOM Contributors
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License Version 2 as 
