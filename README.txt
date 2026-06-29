@@ -54,3 +54,8 @@ Documentation
 -------------
 
 Documentation is available at docs/yom.1
+
+License
+-------
+
+YOM is licensed under the GPL-v2 license only.
