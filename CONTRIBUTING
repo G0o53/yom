@@ -1,0 +1,17 @@
+Contributing Guidelines of YOM
+=============================
+
+Thank you for helping build a faster, lighter micro-shell!
+
+Legal Agreement
+---------------
+By submitting a PR, you explicitly agree that your contributions 
+are licensed under the project's GNU General Public License V2
+(GPL-2.0-only).
+
+Rules
+----
+* Be smart, if a builtin doesn't need tokenization, don't add it
+* Optimize, make sure it's fast, but still readable
+* Keep the code style, make sure your code has the same style as the rest of the
+project
