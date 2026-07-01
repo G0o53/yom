@@ -14,11 +14,25 @@ execute scripts!). While dash is a nightmare to install, YOM isn't.
 Installation
 ============
 
+Via Homebrew
+------------
+
+Tap G0o53/tap using homebrew
+    brew tap G0o53/tap
+    brew trust G0o53/tap/yom
+
+Install HEAD (recommended):
+    brew install --HEAD yom
+
+Install the current stable version:
+    brew install yom
+
 With man pages
 --------------
 
 Clone the repo:
     git clone https://github.com/G0o53/yom
+
 Then:
     make install
 
@@ -29,6 +43,7 @@ For Packaging
 
 Clone the repo:
     git clone https://github.com/G0o53/yom
+
 Then:
     make
 
@@ -47,8 +62,8 @@ Just:
 Use Cases
 ---------
 
-YOM is useful for boot-scripts or system-scripts that run a list of tasks and 
-use very minimal (and if any) control flow.
+YOM is useful for boot-scripts or system-scripts that run a list of tasks,
+using very minimal (and if any) control flow.
 
 Documentation
 -------------

@@ -12,5 +12,11 @@
 // You should have received a copy of the GNU General Public License 
 // Version 2 along with this program. If not, see 
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
+                                                              
+//! ██ ███  ██ ██████ ██████ █████▄  ███  ██ ▄████▄ ██     ▄█████ 
+//! ██ ██ ▀▄██   ██   ██▄▄   ██▄▄██▄ ██ ▀▄██ ██▄▄██ ██     ▀▀▀▄▄▄ 
+//! ██ ██   ██   ██   ██▄▄▄▄ ██   ██ ██   ██ ██  ██ ██████ █████▀ 
+//! Internals are all the small, repetative helper functions to do stuff that 
+//! needs to be done.
 
 pub mod helpers;

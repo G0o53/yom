@@ -13,6 +13,13 @@
 // Version 2 along with this program. If not, see 
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
+//! ██  ██ ██████ ██     █████▄ ██████ █████▄  ▄█████ 
+//! ██████ ██▄▄   ██     ██▄▄█▀ ██▄▄   ██▄▄██▄ ▀▀▀▄▄▄ 
+//! ██  ██ ██▄▄▄▄ ██████ ██     ██▄▄▄▄ ██   ██ █████▀ 
+//! The `helpers.rs` file is the file with all of the helper functions `yom` 
+//! needs to function properly, and were (or would've been) used too much in the
+//! other files.
+
 /// ▄█████ ██████ █████▄        ▄████▄ █████▄        ██ ███  ██ ██████ 
 /// ▀▀▀▄▄▄   ██   ██▄▄██▄       ██  ██ ██▄▄██▄       ██ ██ ▀▄██   ██   
 /// █████▀   ██   ██   ██ ▄▄▄▄▄ ▀████▀ ██   ██ ▄▄▄▄▄ ██ ██   ██   ██   
@@ -22,7 +29,7 @@
 pub fn str_or_int(left: &str, right: &str) -> bool {
         left.parse::<i64>().is_ok() && right.parse::<i64>().is_ok()
 }
-                               
+
 /// ███  ██ ▄█████ ██▄  ▄██ █████▄ 
 /// ██ ▀▄██ ██     ██ ▀▀ ██ ██▄▄█▀ 
 /// ██   ██ ▀█████ ██    ██ ██     
@@ -68,7 +75,7 @@ pub fn ncmp(left: i64, right: i64, operator: &str) -> bool {
         _ => false
     }
 }
-                                             
+
 /// ▄█████ ██████ █████▄  ▄█████ ██▄  ▄██ █████▄ 
 /// ▀▀▀▄▄▄   ██   ██▄▄██▄ ██     ██ ▀▀ ██ ██▄▄█▀ 
 /// █████▀   ██   ██   ██ ▀█████ ██    ██ ██     

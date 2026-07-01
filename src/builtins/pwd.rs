@@ -14,7 +14,7 @@
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
 use std::io::Write;
-                        
+
 /// █████▄ ██     ██ ████▄  
 /// ██▄▄█▀ ██ ▄█▄ ██ ██  ██ 
 /// ██      ▀██▀██▀  ████▀  

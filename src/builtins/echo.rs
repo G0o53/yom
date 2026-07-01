@@ -14,10 +14,10 @@
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
 use std::io::Write;
-                            
+
 /// ██████ ▄█████ ██  ██ ▄████▄ 
 /// ██▄▄   ██     ██████ ██  ██ 
-/// ██▄▄▄▄ ▀█████ ██  ██ ▀████▀             
+/// ██▄▄▄▄ ▀█████ ██  ██ ▀████▀      
 /// Standard shell `echo`
 #[inline]
 pub fn echo<W: Write>(str: &str, out: &mut W) {

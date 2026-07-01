@@ -12,5 +12,12 @@
 // You should have received a copy of the GNU General Public License 
 // Version 2 along with this program. If not, see 
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
+                                                                 
+//! ██████ ██  ██ ██████ ██████ █████▄  ███  ██ ▄████▄ ██     ▄█████ 
+//! ██▄▄    ████    ██   ██▄▄   ██▄▄██▄ ██ ▀▄██ ██▄▄██ ██     ▀▀▀▄▄▄ 
+//! ██▄▄▄▄ ██  ██   ██   ██▄▄▄▄ ██   ██ ██   ██ ██  ██ ██████ █████▀ 
+//! The starting point of all the functions in `yom` for calling external 
+//! programs, these are designed to be lightweight (as all `yom` functions are!)
+//! for maximum speed and least ammount of code that can explode.
 
 pub mod entry;

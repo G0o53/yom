@@ -12,6 +12,12 @@
 // You should have received a copy of the GNU General Public License 
 // Version 2 along with this program. If not, see 
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
+                                                
+//! █████▄ ██  ██ ██ ██    ██████ ██ ███  ██ ▄█████ 
+//! ██▄▄██ ██  ██ ██ ██      ██   ██ ██ ▀▄██ ▀▀▀▄▄▄ 
+//! ██▄▄█▀ ▀████▀ ██ ██████  ██   ██ ██   ██ █████▀ 
+//! This module implements some standard shell builtins for `yom`. These are 
+//! very high-speed and designed to consume as minimal resources as possible.
 
 pub mod echo;
 pub mod pwd;

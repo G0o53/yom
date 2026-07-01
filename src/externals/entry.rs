@@ -13,9 +13,15 @@
 // Version 2 along with this program. If not, see 
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
+//! ██████ ███  ██ ██████ █████▄  ██  ██ 
+//! ██▄▄   ██ ▀▄██   ██   ██▄▄██▄  ▀██▀  
+//! ██▄▄▄▄ ██   ██   ██   ██   ██   ██   
+//! The entrypoint for all the funtions for calling external programs in `yom`,
+//! nothing more to say.
+
 use std::process::Command;
 use std::process::Stdio;
-                                                     
+
 /// ██     ██ ▄████▄ ██ ██████ ██████ ▄████▄ █████▄  
 /// ██ ▄█▄ ██ ██▄▄██ ██   ██   ██▄▄   ██  ██ ██▄▄██▄ 
 ///  ▀██▀██▀  ██  ██ ██   ██   ██     ▀████▀ ██   ██  
@@ -52,7 +58,7 @@ pub fn waitfor(path: &str) {
         child.wait().unwrap();
     }
 }
-                                                                         
+ 
 /// █████▄ ▄████▄ ▄█████ ██ ▄█▀  ▄████  █████▄  ▄████▄ ██  ██ ███  ██ ████▄  
 /// ██▄▄██ ██▄▄██ ██     ████   ██  ▄▄▄ ██▄▄██▄ ██  ██ ██  ██ ██ ▀▄██ ██  ██ 
 /// ██▄▄█▀ ██  ██ ▀█████ ██ ▀█▄  ▀███▀  ██   ██ ▀████▀ ▀████▀ ██   ██ ████▀  
@@ -91,7 +97,7 @@ pub fn background(command: &str) {
  
     }
 }
-                                                                         
+
 /// ██████ ██  ██ ██████ ▄█████ 
 /// ██▄▄    ████  ██▄▄   ██     
 /// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████ 
