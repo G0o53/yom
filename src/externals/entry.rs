@@ -1,19 +1,19 @@
 // Copyright (C) 2026 The YOM Contributors
 //
 // This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License Version 2 as 
+// it under the terms of the GNU General Public License Version 2 as
 // published by the Free Software Foundation.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// GNU General Public License Version 2 for more details.
 //
-// You should have received a copy of the GNU General Public License 
-// Version 2 along with this program. If not, see 
+// You should have received a copy of the GNU General Public License
+// Version 2 along with this program. If not, see
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
-//! ██████ ███  ██ ██████ █████▄  ██  ██ 
+//! ██████ ███  ██ ██████ █████▄  ██  ██
 //! ██▄▄   ██ ▀▄██   ██   ██▄▄██▄  ▀██▀  
 //! ██▄▄▄▄ ██   ██   ██   ██   ██   ██   
 //! The entrypoint for all the funtions for calling external programs in `yom`,
@@ -23,11 +23,11 @@ use std::process::Command;
 use std::process::Stdio;
 
 /// ██     ██ ▄████▄ ██ ██████ ██████ ▄████▄ █████▄  
-/// ██ ▄█▄ ██ ██▄▄██ ██   ██   ██▄▄   ██  ██ ██▄▄██▄ 
+/// ██ ▄█▄ ██ ██▄▄██ ██   ██   ██▄▄   ██  ██ ██▄▄██▄
 ///  ▀██▀██▀  ██  ██ ██   ██   ██     ▀████▀ ██   ██  
 /// This function executes the path given
 /// and waits for the child created to
-/// complete it's task, it takes the 
+/// complete it's task, it takes the
 /// entire line.
 pub fn waitfor(path: &str) {
     let split = shell_words::split(path).expect("Invalid command syntax");
@@ -45,7 +45,6 @@ pub fn waitfor(path: &str) {
             .expect("Failed to start");
 
         child.wait().unwrap();
-
     } else {
         let mut child = Command::new(program)
             .args(args)
@@ -58,34 +57,32 @@ pub fn waitfor(path: &str) {
         child.wait().unwrap();
     }
 }
- 
+
 /// █████▄ ▄████▄ ▄█████ ██ ▄█▀  ▄████  █████▄  ▄████▄ ██  ██ ███  ██ ████▄  
-/// ██▄▄██ ██▄▄██ ██     ████   ██  ▄▄▄ ██▄▄██▄ ██  ██ ██  ██ ██ ▀▄██ ██  ██ 
+/// ██▄▄██ ██▄▄██ ██     ████   ██  ▄▄▄ ██▄▄██▄ ██  ██ ██  ██ ██ ▀▄██ ██  ██
 /// ██▄▄█▀ ██  ██ ▀█████ ██ ▀█▄  ▀███▀  ██   ██ ▀████▀ ▀████▀ ██   ██ ████▀  
 /// This function needs the end cleaned,
 /// it does not wait for the child
-/// created to finish; in the main 
+/// created to finish; in the main
 /// function, it ignores the returned
 /// Child, use it for ephermal scripts
-/// mainly instead of using it for 
+/// mainly instead of using it for
 /// eternal scripts.
 #[inline]
 pub fn background(command: &str) {
-
     let split = shell_words::split(command).expect("Invalid command syntax");
     let program = &split[0];
     let args = &split[1..];
     if program.starts_with('$') {
         let program = program.strip_prefix('$').unwrap();
 
-         let _ = Command::new(std::env::var_os(program).unwrap())
+        let _ = Command::new(std::env::var_os(program).unwrap())
             .args(args)
             .stdin(Stdio::inherit())
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .spawn()
             .expect("Failed to start");
-
     } else {
         let _ = Command::new(program)
             .args(args)
@@ -94,23 +91,22 @@ pub fn background(command: &str) {
             .stderr(Stdio::inherit())
             .spawn()
             .expect("Failed to start");
- 
     }
 }
 
-/// ██████ ██  ██ ██████ ▄█████ 
+/// ██████ ██  ██ ██████ ▄█████
 /// ██▄▄    ████  ██▄▄   ██     
-/// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████ 
+/// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████
 /// This function is the standard
-/// shell `exec`, it replaces the 
-/// process (yom) with the path 
+/// shell `exec`, it replaces the
+/// process (yom) with the path
 /// given. It takes the whole line.
 #[inline]
-pub fn exec(command: &str){
+pub fn exec(command: &str) {
     let path = command.strip_prefix("exec ").unwrap();
-    
-    use std::process::Command;
+
     use std::os::unix::process::CommandExt;
+    use std::process::Command;
 
     let split = shell_words::split(path).expect("Invalid command syntax");
     let program = &split[0];
@@ -121,13 +117,9 @@ pub fn exec(command: &str){
         let _ = Command::new(std::env::var_os(program).unwrap())
             .args(args)
             .exec();
-
     } else {
         let args = &split[1..];
 
-        let _ = Command::new(program)
-            .args(args)
-            .exec();
-
+        let _ = Command::new(program).args(args).exec();
     }
 }

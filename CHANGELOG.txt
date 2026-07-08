@@ -1,0 +1,12 @@
+▄█████ ██  ██ ▄████▄ ███  ██  ▄████  ██████ ██     ▄████▄  ▄████  
+██     ██████ ██▄▄██ ██ ▀▄██ ██  ▄▄▄ ██▄▄   ██     ██  ██ ██  ▄▄▄ 
+▀█████ ██  ██ ██  ██ ██   ██  ▀███▀  ██▄▄▄▄ ██████ ▀████▀  ▀███▀  
+                                                                  
+
+v2.1.0 - 2026-07-04
+------------------------------------------------------------------------
+[ADDED] Built a user error messaging system routing directly to stderr.
+[ADDED] Implemented a err_write function to write errors.
+[FIXED] Resolved a major bug where if statements don't run.
+[FIXED] Resolved an edge case where in an if statement it can run where it 
+should've not run

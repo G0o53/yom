@@ -1,4 +1,4 @@
-.TH YOM 1 "2026-07-01" "v2.0.3" "YOM User Manual"
+.TH YOM 1 "2026-07-04" "v2.1.0-part1" "YOM User Manual"
 .SH NAME
 yom \- lightweight, non-interactive micro-shell and systems glue
 .SH SYNOPSIS
@@ -44,7 +44,7 @@ exit to well... exit
 .B exit <code>
 then
 .B pwd
-to print your working directory. and finally
+to print your working directory, and
 .B export <name>=<value>
 to create an env variable, that can be used in creating processes or in exec
 as follows:
@@ -56,6 +56,17 @@ as follows:
 .B \fB$\fRls &
 .br
 .B exec \fB$\fRls
+and last but not least,
+.B set
+to use it, just do:
+.B set +
+to turn something off
+.B set -
+to turn something off, e.g.
+.B set -e
+makes it so that if your script has an error, it stops, and vice-versa with
+.B set +e
+to turn it off.
 .PP
 .B If Statements
 .br

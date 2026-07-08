@@ -1,32 +1,52 @@
 // Copyright (C) 2026 The YOM Contributors
 //
 // This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License Version 2 as 
+// it under the terms of the GNU General Public License Version 2 as
 // published by the Free Software Foundation.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// GNU General Public License Version 2 for more details.
 //
-// You should have received a copy of the GNU General Public License 
-// Version 2 along with this program. If not, see 
+// You should have received a copy of the GNU General Public License
+// Version 2 along with this program. If not, see
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
 use std::io::{self};
-                             
+use std::process::{Command, Stdio};
+
 /// █████▄  ██████ ▄████▄ ████▄  
-/// ██▄▄██▄ ██▄▄   ██▄▄██ ██  ██ 
+/// ██▄▄██▄ ██▄▄   ██▄▄██ ██  ██
 /// ██   ██ ██▄▄▄▄ ██  ██ ████▀  
 /// Standard shell `read`
 #[inline]
-pub fn read(var: &str) -> String {
-    let var = var.strip_prefix("$").expect("No $ before the variable");
-    let mut var: String = std::env::var(var).unwrap_or_else(|_| String::new());
+pub fn read(var: &str, hook: &str) -> String {
+    if hook == "default" || hook == "" {
+        let var = var.strip_prefix("$").expect("No $ before the variable");
+        let mut var: String = std::env::var(var).unwrap_or_else(|_| String::new());
 
-    io::stdin()
-        .read_line(&mut var)
-        .expect("Failed to read line from stdin");
-    var = var.strip_suffix("\n").unwrap_or(&var).to_string();
-    var
+        io::stdin()
+            .read_line(&mut var)
+            .expect("Failed to read line from stdin");
+        var = var.strip_suffix("\n").unwrap_or(&var).to_string();
+        var
+    } else {
+        let var = var.strip_prefix("$").expect("No $ before the variable");
+        let output = Command::new(hook)
+            .arg("read")
+            .arg(var)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::inherit())
+            .output()
+            .expect("Failed to start");
+
+        if output.status.success() {
+            let result_str = String::from_utf8_lossy(&output.stdout);
+            result_str.trim_end().to_string()
+        } else {
+            String::new()
+        }
+    }
 }
