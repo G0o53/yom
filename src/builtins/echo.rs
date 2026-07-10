@@ -43,8 +43,6 @@ pub fn echo<W: Write, E: Write>(
 
         let status = child.wait().unwrap();
         if status.code().unwrap_or(1) > 1 {
-            ()
-        } else {
             err_write("error hook crashed", stderr);
             if !err_continue {
                 std::process::exit(1);
@@ -52,6 +50,8 @@ pub fn echo<W: Write, E: Write>(
                 let _ = write!(stderr, "using builtin echo instead of hook echo");
                 let _ = write!(out, "{str}\n");
             }
-        };
+        } else {
+            ()
+        }
     }
 }

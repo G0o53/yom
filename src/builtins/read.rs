@@ -44,7 +44,7 @@ pub fn read(var: &str, hook: &str) -> String {
 
         if output.status.success() {
             let result_str = String::from_utf8_lossy(&output.stdout);
-            result_str.trim_end().to_string()
+            result_str.strip_suffix("\n").unwrap_or(&var).to_string()
         } else {
             String::new()
         }

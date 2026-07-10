@@ -507,11 +507,20 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         }
         line.clear();
         return;
+
     } else if line.starts_with("hook ") {
         let split = shell_words::split(&line).unwrap();
         let injected: &str = &split[1];
         let path = &split[2..];
-        let path: String = path.join("");
+        let mut path: String = path.join("");
+        if path.starts_with("~/") {
+            path = path.strip_prefix("~").unwrap().to_string();
+            if let Some(home_path) = home::home_dir() {
+                if let Some(home_str) = home_path.to_str() {
+                    path.insert_str(0, home_str);
+                }
+            }
+        }
 
         if injected == "cd" {
             *cd_hook = path
