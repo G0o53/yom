@@ -72,9 +72,14 @@ fn main() {
     let mut pwd_hook: String = "".into();
     let mut read_hook: String = "".into();
     let mut core_hook: String = "".into();
+    let mut eval_hook: String = "".into();
 
-     while !input_stack.is_empty() {
-        let bytes = input_stack.last_mut().unwrap().read_line(&mut line).unwrap();
+    while !input_stack.is_empty() {
+        let bytes = input_stack
+            .last_mut()
+            .unwrap()
+            .read_line(&mut line)
+            .unwrap();
 
         if bytes == 0 {
             input_stack.pop();
@@ -82,34 +87,35 @@ fn main() {
         }
 
         line = line.trim().into();
-         eval::<false, _, _>(
-            &mut line, 
-            &mut input_stack, 
-            &mut lock, 
-            &mut stderr, 
-            &mut error_continue, 
-            &mut cd_hook, 
-            &mut echo_hook, 
-            &mut exit_hook, 
-            &mut pwd_hook, 
+        eval::<false, _, _>(
+            &mut line,
+            &mut input_stack,
+            &mut lock,
+            &mut stderr,
+            &mut error_continue,
+            &mut cd_hook,
+            &mut echo_hook,
+            &mut exit_hook,
+            &mut pwd_hook,
             &mut read_hook,
-            &mut core_hook
+            &mut core_hook,
+            &mut eval_hook,
         );
-     }
+    }
+
     if !core_hook.is_empty() {
+        use std::env;
+        use std::fs;
         use std::os::unix::net::UnixListener;
         use std::process::{Command, Stdio};
-        use std::fs;
-        use std::io::Read;
-        use std::env;
 
-
-        let _ = Command::new(&core_hook)
-            .arg(&core_hook)
+        let mut core = Command::new(&core_hook)
+            .arg("core")
             .stdin(Stdio::inherit())
             .stdout(Stdio::inherit())
-            .stdin(Stdio::inherit())
-            .spawn();
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("Failed to start the core process binary");
 
         let socket_path = "/tmp/yom_core.sock";
         let _ = fs::remove_file(socket_path);
@@ -122,44 +128,75 @@ fn main() {
                 exit(1);
             }
         };
-        let (mut stream, _address) = listener.accept()
-            .expect("Failed to accept an incoming client connection");
-        
-        let mut buffer = String::new();
-        let mut old_cwd = env::current_dir().expect("Failed to get current working directory");
-        
-        loop {
-            stream.read_to_string(&mut buffer)
-                .expect("Failed to read data from the client stream");
 
-            if buffer.starts_with("eval ") {
-                let mut core_line: String = buffer.strip_prefix("eval ").unwrap().to_string();
-                eval_call(
-                    &mut core_line, 
-                    &mut input_stack, 
-                    &mut lock, 
-                    &mut stderr, 
-                    &mut error_continue, 
-                    &mut cd_hook, 
-                    &mut echo_hook, 
-                    &mut exit_hook, 
-                    &mut pwd_hook,
-                    &mut read_hook,
-                    &mut core_hook
-                );
-                let cwd = env::current_dir().expect("Failed to get current working directory");
-                if old_cwd != cwd {
-                    old_cwd = env::current_dir().expect("Failed to get current working directory");
-                    let cwd_string = cwd.to_string_lossy().into_owned();
-                    stream.write_all(cwd_string.as_bytes()).expect("Failed to write data to socket");
-                
+        let (stream, _address) = listener
+            .accept()
+            .expect("Failed to accept an incoming client connection");
+
+        let mut old_cwd = env::current_dir().expect("Failed to get current working directory");
+
+        let mut stream_clone = stream.try_clone().expect("Failed to clone stream");
+        let mut reader = io::BufReader::new(stream);
+        let mut line_buf = String::new();
+
+        loop {
+            line_buf.clear();
+            match reader.read_line(&mut line_buf) {
+                Ok(0) => {
+                    let _ = std::fs::remove_file("/tmp/yom_core.sock");
+
+                    match core.wait() {
+                        Ok(status) => {
+                            if let Some(code) = status.code() {
+                                exit(code);
+                            } else {
+                                let _ = write!(stderr, "core was terminated by a signal\n");
+                            }
+                        }
+
+                        Err(_) => { 
+                            err_write("failed to get core's exit code", &mut stderr);
+                            let _ = write!(stderr, "defaulting to code 0\n");
+                            exit(0);
+                        }
+                    }
                 }
-                
-            
+                Ok(_) => {
+                    let incoming = line_buf.trim();
+                    if incoming.starts_with("eval ") {
+                        let mut core_line = incoming.strip_prefix("eval ").unwrap().to_string();
+                        eval_call(
+                            &mut core_line,
+                            &mut input_stack,
+                            &mut lock,
+                            &mut stderr,
+                            &mut error_continue,
+                            &mut cd_hook,
+                            &mut echo_hook,
+                            &mut exit_hook,
+                            &mut pwd_hook,
+                            &mut read_hook,
+                            &mut core_hook,
+                            &mut eval_hook,
+                        );
+
+                        let cwd =
+                            env::current_dir().expect("Failed to get current working directory");
+                        if old_cwd != cwd {
+                            old_cwd = cwd.clone();
+                            let cwd_string = format!(":{}\n", cwd.to_string_lossy());
+                            let _ = stream_clone.write_all(cwd_string.as_bytes());
+                        } else {
+                            let _ = stream_clone.write_all(b"C\n");
+                        }
+                    }
+                }
+                Err(_) => {
+                    err_write("[FATAL] STREAM READ ERROR", &mut stderr);
+                    exit(2);
+                }
             }
         }
-
-
     } else {
         return;
     }
@@ -177,21 +214,23 @@ fn eval_call<W: Write, E: Write>(
     exit_hook: &mut String,
     pwd_hook: &mut String,
     read_hook: &mut String,
-    core_hook: &mut String
+    core_hook: &mut String,
+    eval_hook: &mut String,
 ) {
     eval::<true, W, E>(
-        &mut line, 
-        input_stack, 
-        &mut lock, 
-        &mut stderr, 
-        error_continue, 
-        cd_hook, 
-        echo_hook, 
-        exit_hook, 
+        &mut line,
+        input_stack,
+        &mut lock,
+        &mut stderr,
+        error_continue,
+        cd_hook,
+        echo_hook,
+        exit_hook,
         pwd_hook,
         read_hook,
-        core_hook
-        )
+        core_hook,
+        eval_hook,
+    )
 }
 
 #[inline(always)]
@@ -206,8 +245,15 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
     exit_hook: &mut String,
     pwd_hook: &mut String,
     read_hook: &mut String,
-    core_hook: &mut String
+    core_hook: &mut String,
+    eval_hook: &mut String
 ) {
+    let status = exec_hooks(eval_hook, "eval", line, error_continue, &mut stderr);
+    if status == 0 { 
+        line.clear(); 
+        return; 
+    }
+
     if line.starts_with("#") || line == "" {
         // ignores line
         line.clear();
@@ -307,6 +353,13 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             }
             line.clear();
             return;
+        } else {
+            err_write("syntax error", &mut stderr);
+            if !*error_continue {
+                exit(1);
+            }
+            line.clear();
+            return;
         }
     } else if line.starts_with("cd ") {
         let dir = line.strip_prefix("cd ").unwrap(); // trims the "cd " string from the dir
@@ -396,7 +449,13 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 } else {
                     line.clear();
 
-                    while input_stack.last_mut().unwrap().read_line(&mut line).unwrap() > 0 {
+                    while input_stack
+                        .last_mut()
+                        .unwrap()
+                        .read_line(&mut line)
+                        .unwrap()
+                        > 0
+                    {
                         let trimmed = line.trim();
                         if trimmed.starts_with("if [") {
                             indent += 1;
@@ -423,7 +482,13 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 } else {
                     line.clear();
 
-                    while input_stack.last_mut().unwrap().read_line(&mut line).unwrap() > 0 {
+                    while input_stack
+                        .last_mut()
+                        .unwrap()
+                        .read_line(&mut line)
+                        .unwrap()
+                        > 0
+                    {
                         let trimmed = line.trim();
                         if trimmed.starts_with("if [") {
                             indent += 1;
@@ -457,7 +522,13 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 } else {
                     line.clear();
 
-                    while input_stack.last_mut().unwrap().read_line(&mut line).unwrap() > 0 {
+                    while input_stack
+                        .last_mut()
+                        .unwrap()
+                        .read_line(&mut line)
+                        .unwrap()
+                        > 0
+                    {
                         let trimmed = line.trim();
                         if trimmed.starts_with("if [") {
                             indent += 1;
@@ -485,7 +556,13 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 } else {
                     line.clear();
 
-                    while input_stack.last_mut().unwrap().read_line(&mut line).unwrap() > 0 {
+                    while input_stack
+                        .last_mut()
+                        .unwrap()
+                        .read_line(&mut line)
+                        .unwrap()
+                        > 0
+                    {
                         let trimmed = line.trim();
                         if trimmed.starts_with("if [") {
                             indent += 1;
@@ -507,7 +584,6 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         }
         line.clear();
         return;
-
     } else if line.starts_with("hook ") {
         let split = shell_words::split(&line).unwrap();
         let injected: &str = &split[1];
@@ -540,6 +616,8 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             *exit_hook = path.to_owned();
             *pwd_hook = path.to_owned();
             *read_hook = path.to_owned();
+        } else if injected == "eval" {
+            eval_hook.push_str(&path);
         } else {
             err_write("hook not valid", stderr);
             if !*error_continue {

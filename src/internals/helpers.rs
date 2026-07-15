@@ -124,7 +124,7 @@ pub fn strcmp(left: &str, right: &str, operator: &str) -> bool {
 /// ██████ █████▄  █████▄       ██     ██ █████▄  ██ ██████ ██████
 /// ██▄▄   ██▄▄██▄ ██▄▄██▄      ██ ▄█▄ ██ ██▄▄██▄ ██   ██   ██▄▄   
 /// ██▄▄▄▄ ██   ██ ██   ██ ▄▄▄▄▄ ▀██▀██▀  ██   ██ ██   ██   ██▄▄▄▄
-/// `err_write` prints and error to stdout that is beautifully formatted.
+/// `err_write` prints an error to stdout that is beautifully formatted.
 #[inline]
 pub fn err_write<E: Write>(message: &str, stderr: &mut E) {
     let _ = write!(
@@ -132,3 +132,30 @@ pub fn err_write<E: Write>(message: &str, stderr: &mut E) {
         "\x1b[38;5;196m░▒▓\x1b[48;5;196;38;5;196m█\x1b[48;5;196;37;1m error: {message} \x1b[48;5;196;38;5;196m█\x1b[0m\x1b[38;5;196m▓▒░\x1b[0m\n"
     );
 }
+
+#[inline]
+pub fn exec_hooks<E: Write>(hooks: &str, hook_name: &str, to_eval: &str, err_continue: &mut bool, stderr: &mut E) -> i32 {
+    let split = shell_words::split(hooks).unwrap();
+
+    for path in split.iter() {
+        match std::process::Command::new(path).arg(&hook_name).arg(to_eval).spawn() {
+            Ok(mut child) => { 
+                let status = child.wait(); 
+                match status.unwrap().code() {
+                    Some(code) => return code,
+                    None => return 1,
+                }
+            }
+
+            Err(_) => {
+                err_write("failed to spawn eval hook", stderr);
+                if !*err_continue {
+                    std::process::exit(1);
+                }
+                return 1;
+            }
+        }
+    }
+    return 1;
+}
+
