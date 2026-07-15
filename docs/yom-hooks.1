@@ -1,0 +1,20 @@
+.TH YOM-HOOKS 1 "2026-07-10" "v2.2.0-part1" "YOM User Manual"
+.SH NAME
+yom-hooks \- lightweight hook API for the YOM shell
+.SH SYNOPSIS
+.B hook
+.I HOOK PATH
+.SH DESCRIPTION
+The YOM-hook API allows you to change 
+.I YOM's 
+builtins to run a binary, or basically any other action, the following created hooks are:
+.I echo read exit cd pwd core eval
+
+.SH API
+
+.SS ECHO
+The
+.B echo
+hook simply works like this:
+.I arg1
+is just the string to echo

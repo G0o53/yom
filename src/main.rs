@@ -353,6 +353,27 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             }
             line.clear();
             return;
+
+    } else if line == "exit" {
+        builtins::exit::exit(0, &exit_hook, &mut stderr, *error_continue); // calls exit on exit code 0
+        line.clear();
+        return;
+    } else if line.starts_with("exit ") {
+        let code = line.strip_prefix("exit ").unwrap();
+        let val = str_or_int(code, code);
+        if val == true {
+            let code: i32 = code.parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
+            builtins::exit::exit(code, &exit_hook, &mut stderr, *error_continue); // executes exit on exit code specified in the file
+            line.clear();
+            return;
+        } else {
+            err_write("exit requires an integer", &mut stderr);
+            if !*error_continue {
+                exit(1);
+            }
+            line.clear();
+            return;
+        }
         } else {
             err_write("syntax error", &mut stderr);
             if !*error_continue {
@@ -398,26 +419,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             line.clear();
             return;
         }
-    } else if line == "exit" {
-        builtins::exit::exit(0, &exit_hook, &mut stderr, *error_continue); // calls exit on exit code 0
-        line.clear();
-        return;
-    } else if line.starts_with("exit ") {
-        let code = line.strip_prefix("exit ").unwrap();
-        let val = str_or_int(code, code);
-        if val == true {
-            let code: i32 = code.parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
-            builtins::exit::exit(code, &exit_hook, &mut stderr, *error_continue); // executes exit on exit code specified in the file
-            line.clear();
-            return;
-        } else {
-            err_write("exit requires an integer", &mut stderr);
-            if !*error_continue {
-                exit(1);
-            }
-            line.clear();
-            return;
-        }
+
     } else if line.starts_with("if [") {
         let split = shell_words::split(&line).unwrap();
         let left: &str = &split[2];
