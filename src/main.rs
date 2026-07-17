@@ -151,6 +151,7 @@ fn main() {
                                 exit(code);
                             } else {
                                 let _ = write!(stderr, "core was terminated by a signal\n");
+                                exit(3);
                             }
                         }
 

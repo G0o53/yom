@@ -13,4 +13,8 @@ should've not run
 
 v2.1.0 - 2026-07-10
 ------------------------------------------------------------------------
-[ADDED] API for hooks implemented 
+[ADDED] API for hooks implemented
+
+v2.2.1-part1.1 - v2.2.2
+------------------------------------------------------------------------
+[ADDED] New docs for the hook API
