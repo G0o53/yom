@@ -17,8 +17,42 @@ echo "It can even match dash in performance."
 
 # Installation
 
-Via Homebrew
-------------
+## With man pages
+
+Clone the repo:
+```bash
+git clone https://github.com/G0o53/yom
+```
+
+Then:
+```bash
+make install
+```
+
+That will then use `sudo` to install the man pages.
+
+## For Packaging
+
+Clone the repo
+```bash
+git clone https://github.com/G0o53/yom
+```
+
+then just use `make`
+```bash
+make
+```
+
+the binary will be at `target/release/yom`
+man pages are at `docs/yom.1` and `docs/yom-hooks.1`
+
+## With Cargo
+
+Just:
+```bash
+cargo install yom
+```
+## Via Homebrew
 
 Tap G0o53/tap using homebrew
 ```bash
@@ -34,44 +68,6 @@ brew install --HEAD yom
 Install the current stable version:
 ```bash
 brew install yom
-```
-
-# With man pages
-
-Clone the repo:
-```bash
-git clone https://github.com/G0o53/yom
-```
-
-Then:
-```bash
-make install
-```
-
-That will then use `sudo` to install the man pages.
-
-For Packaging
--------------
-
-Clone the repo
-```bash
-git clone https://github.com/G0o53/yom
-```
-
-then just use `make`
-```bash
-make
-```
-
-the binary will be at `target/release/yom`
-man pages are at `docs/yom.1`
-
-With Cargo
-----------
-
-Just:
-```bash
-cargo install yom
 ```
 </details>
 
@@ -89,11 +85,16 @@ cargo install yom
 
 # Documentation
 
-Depending on how you installed it, `YOM` will either have documentation (man pages) installed on your system, or you will have to find them manually, if you used any of the `brew` methods or the `make install`, then you have man pages to view, to use, simply do
+Depending on how you installed it, `YOM` will either have documentation (man pages) installed on your system, or you will have to find them manually, 
+if you used any of the `brew` methods or the `make install`, then you have man pages to view, to use, simply do
 ```bash
 man yom
 ```
-if you installed it using another method, you will find the file at `docs/yom.1`
+for the general manual, for the hooks API manual, do
+```bash
+man yom-hooks
+```
+if you installed it using another method, you will find the manual at `docs/yom.1` and `docs/yom-hooks.1`
 
 </details>
 

@@ -9,12 +9,17 @@ v2.1.0 - 2026-07-04
 [ADDED] Implemented a err_write function to write errors.
 [FIXED] Resolved a major bug where if statements don't run.
 [FIXED] Resolved an edge case where in an if statement it can run where it 
-should've not run
+should've not run.
 
 v2.1.0 - 2026-07-10
 ------------------------------------------------------------------------
-[ADDED] API for hooks implemented
+[ADDED] API for hooks implemented.
 
 v2.2.1-part1.1 - v2.2.2
 ------------------------------------------------------------------------
-[ADDED] New docs for the hook API
+[ADDED] New docs for the hook API.
+
+v2.2.2 - v 2.2.3
+------------------------------------------------------------------------
+[FIXED] Changed install priority in the README.md file so that you are
+guided naturally to the make install method.
