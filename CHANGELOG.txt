@@ -33,3 +33,7 @@ man3/ instead of man1/
 v2.2.4 - v2.2.5
 ----------------------------------------------------------------------
 [FIXED] Made badges on README.md links (redo)
+
+v2.2.5 - v2.2.6
+----------------------------------------------------------------------
+[FIXED] Fixed crates.io badge to link to yom crate

@@ -1,7 +1,7 @@
 # YOM
 
 [![Static Badge](https://img.shields.io/badge/YOM-github.com-blueviolet)](https://github.com/G0o53/yom)
-[![Static Badge](https://img.shields.io/badge/YOM-crates.io-orange)](https://crates.io)
+[![Static Badge](https://img.shields.io/badge/YOM-crates.io-orange)](https://crates.io/crates/yom)
 
 YOM is the fast, almost scary fast, dash competitor (even though it can only 
 execute scripts!). While dash is a nightmare to install, YOM isn't.
