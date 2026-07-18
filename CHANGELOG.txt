@@ -29,3 +29,7 @@ v2.2.3 - v2.2.4
 [FIXED] Made badges on README.md links
 [FIXED] Made the installation put yom-hooks.1 (now yom-hooks.3) into all
 man3/ instead of man1/
+
+v2.2.4 - v2.2.5
+----------------------------------------------------------------------
+[FIXED] Made badges on README.md links (redo)
