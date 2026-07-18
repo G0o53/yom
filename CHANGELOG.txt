@@ -19,7 +19,13 @@ v2.2.1-part1.1 - v2.2.2
 ------------------------------------------------------------------------
 [ADDED] New docs for the hook API.
 
-v2.2.2 - v 2.2.3
+v2.2.2 - v2.2.3
 ------------------------------------------------------------------------
 [FIXED] Changed install priority in the README.md file so that you are
 guided naturally to the make install method.
+
+v2.2.3 - v2.2.4
+-----------------------------------------------------------------------
+[FIXED] Made badges on README.md links
+[FIXED] Made the installation put yom-hooks.1 (now yom-hooks.3) into all
+man3/ instead of man1/

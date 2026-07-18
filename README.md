@@ -1,10 +1,10 @@
 # YOM
 
-![Static Badge](https://img.shields.io/badge/YOM-github.com-blueviolet)
-![Static Badge](https://img.shields.io/badge/YOM-crates.io-orange)
+[![Static Badge](https://img.shields.io/badge/YOM-github.com-blueviolet)](github.com/G0o53/yom)
+[![Static Badge](https://img.shields.io/badge/YOM-crates.io-orange)](crates.io/crates/yom)
 
-> YOM is the fast, almost scary fast, dash competitor (even though it can only 
-> execute scripts!). While dash is a nightmare to install, YOM isn't.
+YOM is the fast, almost scary fast, dash competitor (even though it can only 
+execute scripts!). While dash is a nightmare to install, YOM isn't.
 
 ```bash
 echo "This is yom"
@@ -44,7 +44,7 @@ make
 ```
 
 the binary will be at `target/release/yom`
-man pages are at `docs/yom.1` and `docs/yom-hooks.1`
+man pages are at `docs/yom.1` and `docs/yom-hooks.3`
 
 ## With Cargo
 
@@ -76,7 +76,8 @@ brew install yom
 
 # Use Cases
 
-`YOM` is useful for those who need very minimal resource consumption from a shell, or those who like to customize every single aspect to their exact liking
+`YOM` is useful for those who need very minimal resource consumption from a shell, or those who like to customize every single aspect to their exact liking,
+you choose.
 
 </details>
 
@@ -94,7 +95,7 @@ for the general manual, for the hooks API manual, do
 ```bash
 man yom-hooks
 ```
-if you installed it using another method, you will find the manual at `docs/yom.1` and `docs/yom-hooks.1`
+if you installed it using another method, you will find the manual at `docs/yom.1` and `docs/yom-hooks.3`
 
 </details>
 
@@ -105,3 +106,4 @@ YOM is licensed under the `GPL-v2` license only.
 
 </details>
 
+_if you like this, give it a 🌟_

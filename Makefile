@@ -19,17 +19,19 @@ build:
 install:
 	cargo install --path .
 	sudo mkdir -p /usr/local/share/man/man1/
+	sudo mkdir -p /usr/local/share/man/man3/
 	sudo cp ./docs/yom.1 /usr/local/share/man/man1/yom.1
-	sudo cp ./docs/yom-hooks.1 /usr/local/share/man/man1/yom-hooks.1
+	sudo cp ./docs/yom-hooks.3 /usr/local/share/man/man3/yom-hooks.3
 uninstall:
 	cargo uninstall yom
 	sudo rm -f /usr/local/share/man/man1/yom.1
-	sudo rm -f /usr/local/share/man/man1/yom-hooks.1
+	sudo rm -f /usr/local/share/man/man3/yom-hooks.3
 homebrew:
 	cargo build --release
 	mkdir -p $(PREFIX)/bin
 	cp target/release/yom $(PREFIX)/bin/
 	mkdir -p $(PREFIX)/share/man/man1
+	mkdir -p $(PREFIX)/share/man/man3
 	cp docs/yom.1 $(PREFIX)/share/man/man1/
-	cp docs/yom-hooks.1 $(PREFIX)/share/man/man1/
+	cp docs/yom-hooks.3 $(PREFIX)/share/man/man3/
 
