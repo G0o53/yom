@@ -16,7 +16,7 @@
 //! ██  ██ ██████ ██     █████▄ ██████ █████▄  ▄█████
 //! ██████ ██▄▄   ██     ██▄▄█▀ ██▄▄   ██▄▄██▄ ▀▀▀▄▄▄
 //! ██  ██ ██▄▄▄▄ ██████ ██     ██▄▄▄▄ ██   ██ █████▀
-//! The `helpers.rs` file is the file with all of the helper functions `yom`
+//! The `helpers.rs` file is the file with all of the non-hook related helper functions `yom`
 //! needs to function properly, and were (or would've been) used too much in the
 //! other files.
 
@@ -131,31 +131,5 @@ pub fn err_write<E: Write>(message: &str, stderr: &mut E) {
         stderr,
         "\x1b[38;5;196m░▒▓\x1b[48;5;196;38;5;196m█\x1b[48;5;196;37;1m error: {message} \x1b[48;5;196;38;5;196m█\x1b[0m\x1b[38;5;196m▓▒░\x1b[0m\n"
     );
-}
-
-#[inline]
-pub fn exec_hooks<E: Write>(hooks: &str, hook_name: &str, to_eval: &str, err_continue: &mut bool, stderr: &mut E) -> i32 {
-    let split = shell_words::split(hooks).unwrap();
-
-    for path in split.iter() {
-        match std::process::Command::new(path).arg(&hook_name).arg(to_eval).spawn() {
-            Ok(mut child) => { 
-                let status = child.wait(); 
-                match status.unwrap().code() {
-                    Some(code) => return code,
-                    None => return 1,
-                }
-            }
-
-            Err(_) => {
-                err_write("failed to spawn eval hook", stderr);
-                if !*err_continue {
-                    std::process::exit(1);
-                }
-                return 1;
-            }
-        }
-    }
-    return 1;
 }
 

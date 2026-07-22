@@ -44,6 +44,7 @@ mod builtins; // adds all the builtins as a module
 mod externals; // adds all the functions for externals as a module
 mod internals; // adds all dev functions as a module 
 use internals::helpers::*; // adds the dev functions like they were written in this file
+use internals::hooks::*; // adds the dev functions like they were written in this file
 use std::process::exit;
 
 fn main() {
@@ -66,13 +67,13 @@ fn main() {
 
     let mut error_continue: bool = true;
 
-    let mut cd_hook: String = "".into();
-    let mut echo_hook: String = "".into();
-    let mut exit_hook: String = "".into();
-    let mut pwd_hook: String = "".into();
-    let mut read_hook: String = "".into();
-    let mut core_hook: String = "".into();
-    let mut eval_hook: String = "".into();
+    let mut cd_hook: String = String::new();
+    let mut echo_hook: String = String::new();
+    let mut exit_hook: String = String::new();
+    let mut pwd_hook: String = String::new();
+    let mut read_hook: String = String::new();
+    let mut core_hook: String = String::new();
+    let mut eval_hook: String = String::new();
 
     while !input_stack.is_empty() {
         let bytes = input_stack

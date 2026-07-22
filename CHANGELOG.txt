@@ -37,3 +37,7 @@ v2.2.4 - v2.2.5
 v2.2.5 - v2.2.6
 ----------------------------------------------------------------------
 [FIXED] Fixed crates.io badge to link to yom crate
+
+v2.2.6 - 2.2.7
+----------------------------------------------------------------------
+[EDITED] Edited the man pages to sound more sterile

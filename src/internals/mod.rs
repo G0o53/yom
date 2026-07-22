@@ -20,3 +20,4 @@
 //! needs to be done.
 
 pub mod helpers;
+pub mod hooks;
