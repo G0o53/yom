@@ -20,6 +20,7 @@
 
 use crate::err_write;
 use std::io::Write;
+use std::process::Stdio;
 
 /// ██████ ██  ██ ██████ ▄█████       ██  ██ ▄████▄ ▄████▄ ██ ▄█▀ ▄█████
 /// ██▄▄    ████  ██▄▄   ██           ██████ ██  ██ ██  ██ ████   ▀▀▀▄▄▄
@@ -42,6 +43,9 @@ pub fn exec_hooks<E: Write>(
     for path in split.iter() {
         match std::process::Command::new(path)
             .arg(&hook_name)
+            .stderr(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stdin(Stdio::inherit())
             .arg(to_eval)
             .spawn()
         {
