@@ -132,4 +132,3 @@ pub fn err_write<E: Write>(message: &str, stderr: &mut E) {
         "\x1b[38;5;196m░▒▓\x1b[48;5;196;38;5;196m█\x1b[48;5;196;37;1m error: {message} \x1b[48;5;196;38;5;196m█\x1b[0m\x1b[38;5;196m▓▒░\x1b[0m\n"
     );
 }
-

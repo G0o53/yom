@@ -13,30 +13,40 @@
 // Version 2 along with this program. If not, see
 // <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC1>.
 
-//! ██  ██ ▄████▄ ▄████▄ ██ ▄█▀ ▄█████ 
-//! ██████ ██  ██ ██  ██ ████   ▀▀▀▄▄▄ 
-//! ██  ██ ▀████▀ ▀████▀ ██ ▀█▄ █████▀ 
+//! ██  ██ ▄████▄ ▄████▄ ██ ▄█▀ ▄█████
+//! ██████ ██  ██ ██  ██ ████   ▀▀▀▄▄▄
+//! ██  ██ ▀████▀ ▀████▀ ██ ▀█▄ █████▀
 //! All the hook-related functions in `yom` are stored here.
 
-use std::io::Write;
 use crate::err_write;
+use std::io::Write;
 
-/// ██████ ██  ██ ██████ ▄█████       ██  ██ ▄████▄ ▄████▄ ██ ▄█▀ ▄█████ 
-/// ██▄▄    ████  ██▄▄   ██           ██████ ██  ██ ██  ██ ████   ▀▀▀▄▄▄ 
-/// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████ ▄▄▄▄▄ ██  ██ ▀████▀ ▀████▀ ██ ▀█▄ █████▀ 
+/// ██████ ██  ██ ██████ ▄█████       ██  ██ ▄████▄ ▄████▄ ██ ▄█▀ ▄█████
+/// ██▄▄    ████  ██▄▄   ██           ██████ ██  ██ ██  ██ ████   ▀▀▀▄▄▄
+/// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████ ▄▄▄▄▄ ██  ██ ▀████▀ ▀████▀ ██ ▀█▄ █████▀
 /// `exec_hooks` executes the given hooks, it requires the `hooks`, `hook_name`
-/// which is the argument to give to the hooks, it requires `to_eval` which is what 
+/// which is the argument to give to the hooks, it requires `to_eval` which is what
 /// to give to the hooks as another argument, `err_continue` which is a bool that
 /// says if it is to continue on errors or not, and finally `stderr` which is a lock
 /// onto stderr.
 #[inline]
-pub fn exec_hooks<E: Write>(hooks: &str, hook_name: &str, to_eval: &str, err_continue: &mut bool, stderr: &mut E) -> i32 {
+pub fn exec_hooks<E: Write>(
+    hooks: &str,
+    hook_name: &str,
+    to_eval: &str,
+    err_continue: &mut bool,
+    stderr: &mut E,
+) -> i32 {
     let split = shell_words::split(hooks).unwrap();
 
     for path in split.iter() {
-        match std::process::Command::new(path).arg(&hook_name).arg(to_eval).spawn() {
-            Ok(mut child) => { 
-                let status = child.wait(); 
+        match std::process::Command::new(path)
+            .arg(&hook_name)
+            .arg(to_eval)
+            .spawn()
+        {
+            Ok(mut child) => {
+                let status = child.wait();
                 match status.unwrap().code() {
                     Some(code) => return code,
                     None => return 1,
@@ -54,5 +64,3 @@ pub fn exec_hooks<E: Write>(hooks: &str, hook_name: &str, to_eval: &str, err_con
     }
     return 1;
 }
-
-

@@ -43,7 +43,7 @@ pub fn exit<E: Write>(code: i32, hook: &str, stderr: &mut E, err_continue: bool)
             if err_continue == false {
                 std::process::exit(1);
             } else {
-                let _ = write!(stderr, "using builtin error instead of hook error");
+                let _ = write!(stderr, "using builtin exit instead of hook exit\n");
                 code
             }
         };

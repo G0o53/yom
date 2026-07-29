@@ -47,7 +47,7 @@ pub fn echo<W: Write, E: Write>(
             if !err_continue {
                 std::process::exit(1);
             } else {
-                let _ = write!(stderr, "using builtin echo instead of hook echo");
+                let _ = write!(stderr, "using builtin echo instead of hook echo\n");
                 let _ = write!(out, "{str}\n");
             }
         } else {

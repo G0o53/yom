@@ -53,7 +53,7 @@ pub fn cd<E: Write>(dir: &str, hook: &str, stderr: &mut E, err_continue: bool) {
             if err_continue == false {
                 std::process::exit(1);
             } else {
-                let _ = write!(stderr, "falling back to builtin cd");
+                let _ = write!(stderr, "falling back to builtin cd\n");
                 let _ = std::env::set_current_dir(&dir);
             }
         }

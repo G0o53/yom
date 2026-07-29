@@ -104,7 +104,9 @@ fn main() {
         );
     }
 
-    if !core_hook.is_empty() {
+    if core_hook.is_empty() {
+        std::process::exit(0);
+    } else {
         use std::env;
         use std::fs;
         use std::os::unix::net::UnixListener;
@@ -156,7 +158,7 @@ fn main() {
                             }
                         }
 
-                        Err(_) => { 
+                        Err(_) => {
                             err_write("failed to get core's exit code", &mut stderr);
                             let _ = write!(stderr, "defaulting to code 0\n");
                             exit(0);
@@ -199,8 +201,6 @@ fn main() {
                 }
             }
         }
-    } else {
-        return;
     }
 }
 
@@ -248,12 +248,12 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
     pwd_hook: &mut String,
     read_hook: &mut String,
     core_hook: &mut String,
-    eval_hook: &mut String
+    eval_hook: &mut String,
 ) {
     let status = exec_hooks(eval_hook, "eval", line, error_continue, &mut stderr);
-    if status == 0 { 
-        line.clear(); 
-        return; 
+    if status == 0 {
+        line.clear();
+        return;
     }
 
     if line.starts_with("#") || line == "" {
@@ -355,27 +355,26 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             }
             line.clear();
             return;
-
-    } else if line == "exit" {
-        builtins::exit::exit(0, &exit_hook, &mut stderr, *error_continue); // calls exit on exit code 0
-        line.clear();
-        return;
-    } else if line.starts_with("exit ") {
-        let code = line.strip_prefix("exit ").unwrap();
-        let val = str_or_int(code, code);
-        if val == true {
-            let code: i32 = code.parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
-            builtins::exit::exit(code, &exit_hook, &mut stderr, *error_continue); // executes exit on exit code specified in the file
+        } else if line == "exit" {
+            builtins::exit::exit(0, &exit_hook, &mut stderr, *error_continue); // calls exit on exit code 0
             line.clear();
             return;
-        } else {
-            err_write("exit requires an integer", &mut stderr);
-            if !*error_continue {
-                exit(1);
+        } else if line.starts_with("exit ") {
+            let code = line.strip_prefix("exit ").unwrap();
+            let val = str_or_int(code, code);
+            if val == true {
+                let code: i32 = code.parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
+                builtins::exit::exit(code, &exit_hook, &mut stderr, *error_continue); // executes exit on exit code specified in the file
+                line.clear();
+                return;
+            } else {
+                err_write("exit requires an integer", &mut stderr);
+                if !*error_continue {
+                    exit(1);
+                }
+                line.clear();
+                return;
             }
-            line.clear();
-            return;
-        }
         } else {
             err_write("syntax error", &mut stderr);
             if !*error_continue {
@@ -402,7 +401,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         let _ = builtins::pwd::pwd(&mut lock, &mut stderr, &pwd_hook); // calls pwd (handing stdout lock over)
         line.clear();
         return;
-    } else if line.starts_with("read") {
+    } else if line.starts_with("read ") {
         let prompt = line.strip_prefix("read ").unwrap(); // removes the string "read " from the prompt
         if prompt.starts_with('"') && prompt.ends_with('"') {
             let prompt = prompt.strip_prefix('"').unwrap(); // trims quotes
@@ -421,8 +420,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             line.clear();
             return;
         }
-
-    } else if line.starts_with("if [") {
+    } else if line.starts_with("if [ ") {
         let split = shell_words::split(&line).unwrap();
         let left: &str = &split[2];
         let operator: &str = &split[3];
