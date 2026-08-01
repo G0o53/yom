@@ -28,9 +28,9 @@ use std::process::Command;
 /// `exec_hook` executes the given hook, it requires the path to the hook, 
 /// `hook_arg1` which is the first argument to give to the hooks,
 /// and it requires `hook_arg2` which is what to give to the hooks as another argument
-/// says if it is to continue on errors or not, and finally `stderr` which is a lock
-/// onto stderr.
-pub fn exec_hook<E: Write>(path: &str, hook_arg1: &str, hook_arg2: &str, stderr: &mut E) -> i32 {
+/// says if it is to continue on errors or not, it also needs `err_hook` which is a `&str`
+/// saying what the err_write hook is, and finally `stderr` which is a lock onto stderr.
+pub fn exec_hook<E: Write>(path: &str, hook_arg1: &str, hook_arg2: &str, err_hook: &str, stderr: &mut E) -> i32 {
     let mut child = Command::new(path)
         .arg(hook_arg1)
         .arg(hook_arg2)
@@ -41,7 +41,7 @@ pub fn exec_hook<E: Write>(path: &str, hook_arg1: &str, hook_arg2: &str, stderr:
     let exit_code = if let Some(c) = status.code() {
         c
     } else {
-        err_write("process terminated by signal", stderr);
+        err_write("process terminated by signal", err_hook, stderr);
         return 1;
     };
     exit_code

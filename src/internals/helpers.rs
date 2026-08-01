@@ -20,7 +20,7 @@
 //! needs to function properly, and were (or would've been) used too much in the
 //! other files.
 
-use std::io::Write;
+use std::{io::Write, process::Command};
 
 /// ▄█████ ██████ █████▄        ▄████▄ █████▄        ██ ███  ██ ██████
 /// ▀▀▀▄▄▄   ██   ██▄▄██▄       ██  ██ ██▄▄██▄       ██ ██ ▀▄██   ██   
@@ -126,9 +126,19 @@ pub fn strcmp(left: &str, right: &str, operator: &str) -> bool {
 /// ██▄▄▄▄ ██   ██ ██   ██ ▄▄▄▄▄ ▀██▀██▀  ██   ██ ██   ██   ██▄▄▄▄
 /// `err_write` prints an error to stdout that is beautifully formatted.
 #[inline]
-pub fn err_write<E: Write>(message: &str, stderr: &mut E) {
-    let _ = write!(
-        stderr,
-        "\x1b[38;5;196m░▒▓\x1b[48;5;196;38;5;196m█\x1b[48;5;196;37;1m error: {message} \x1b[48;5;196;38;5;196m█\x1b[0m\x1b[38;5;196m▓▒░\x1b[0m\n"
-    );
+pub fn err_write<E: Write>(message: &str, err_hook: &str, stderr: &mut E) {
+    if err_hook == "" || err_hook == "default" {
+        let _ = write!(
+            stderr,
+            "\x1b[38;5;196m░▒▓\x1b[48;5;196;38;5;196m█\x1b[48;5;196;37;1m error: {message} \x1b[48;5;196;38;5;196m█\x1b[0m\x1b[38;5;196m▓▒░\x1b[0m\n"
+        );
+    } else {
+        let mut child = Command::new(err_hook)
+            .arg("err_write")
+            .arg(message)
+            .spawn()
+            .unwrap();
+            
+        let _ = child.wait().expect("failed to wait on child");
+    }
 }

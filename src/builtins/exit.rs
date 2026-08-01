@@ -22,7 +22,7 @@ use std::process::{Command, Stdio};
 /// ██▄▄▄▄ ██  ██ ██   ██   
 /// Exits with given exit code
 #[inline]
-pub fn exit<E: Write>(code: i32, hook: &str, stderr: &mut E, err_continue: bool) {
+pub fn exit<E: Write>(code: i32, hook: &str, err_hook: &str, stderr: &mut E, err_continue: bool) {
     if hook == "default" || hook == "" {
         std::process::exit(code);
     } else {
@@ -39,7 +39,7 @@ pub fn exit<E: Write>(code: i32, hook: &str, stderr: &mut E, err_continue: bool)
         let exit_code = if let Some(c) = status.code() {
             c
         } else {
-            err_write("error hook crashed", stderr);
+            err_write("exit hook crashed", err_hook, stderr);
             if err_continue == false {
                 std::process::exit(1);
             } else {

@@ -22,7 +22,7 @@ use std::process::{Command, Stdio};
 /// ▀█████ ████▀  
 /// Standerd shell `cd`
 #[inline]
-pub fn cd<E: Write>(dir: &str, hook: &str, stderr: &mut E, err_continue: bool) {
+pub fn cd<E: Write>(dir: &str, hook: &str, err_hook: &str, stderr: &mut E, err_continue: bool) {
     if hook == "default" || hook == "" {
         let _ = std::env::set_current_dir(&dir);
     } else {
@@ -41,7 +41,7 @@ pub fn cd<E: Write>(dir: &str, hook: &str, stderr: &mut E, err_continue: bool) {
 
             if !path.is_empty() {
                 if let Err(e) = std::env::set_current_dir(path) {
-                    err_write("cd hook failed to work", stderr);
+                    err_write("cd hook crashed", err_hook, stderr);
                     let _ = write!(stderr, "{e}");
                     if err_continue == false {
                         std::process::exit(1);
@@ -49,7 +49,7 @@ pub fn cd<E: Write>(dir: &str, hook: &str, stderr: &mut E, err_continue: bool) {
                 }
             }
         } else {
-            err_write("cd hook failed to give proper directory", stderr);
+            err_write("cd hook failed to give proper directory", err_hook, stderr);
             if err_continue == false {
                 std::process::exit(1);
             } else {

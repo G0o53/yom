@@ -26,6 +26,7 @@ pub fn echo<W: Write, E: Write>(
     str: &str,
     out: &mut W,
     hook: &str,
+    err_hook: &str,
     stderr: &mut E,
     err_continue: bool,
 ) {
@@ -43,7 +44,7 @@ pub fn echo<W: Write, E: Write>(
 
         let status = child.wait().unwrap();
         if status.code().unwrap_or(1) > 1 {
-            err_write("error hook crashed", stderr);
+            err_write("echo hook crashed", err_hook, stderr);
             if !err_continue {
                 std::process::exit(1);
             } else {

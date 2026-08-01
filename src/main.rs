@@ -74,6 +74,7 @@ fn main() {
     let mut read_hook: String = String::new();
     let mut core_hook: String = String::new();
     let mut eval_hook: String = String::new();
+    let mut err_hook: String = String::new();
 
     while !input_stack.is_empty() {
         let bytes = input_stack
@@ -101,6 +102,7 @@ fn main() {
             &mut read_hook,
             &mut core_hook,
             &mut eval_hook,
+            &mut err_hook,
         );
     }
 
@@ -126,7 +128,7 @@ fn main() {
         let listener = match UnixListener::bind(socket_path) {
             Ok(listener) => listener,
             Err(_) => {
-                err_write("failed to bind to socket_path", &mut stderr);
+                err_write("failed to bind to socket_path", &err_hook, &mut stderr);
                 let _ = fs::remove_file(socket_path);
                 exit(1);
             }
@@ -159,7 +161,7 @@ fn main() {
                         }
 
                         Err(_) => {
-                            err_write("failed to get core's exit code", &mut stderr);
+                            err_write("failed to get core's exit code", &err_hook, &mut stderr);
                             let _ = write!(stderr, "defaulting to code 0\n");
                             exit(0);
                         }
@@ -182,6 +184,7 @@ fn main() {
                             &mut read_hook,
                             &mut core_hook,
                             &mut eval_hook,
+                            &mut err_hook,
                         );
 
                         let cwd =
@@ -196,7 +199,7 @@ fn main() {
                     }
                 }
                 Err(_) => {
-                    err_write("[FATAL] STREAM READ ERROR", &mut stderr);
+                    err_write("[FATAL] STREAM READ ERROR", &err_hook, &mut stderr);
                     exit(2);
                 }
             }
@@ -218,6 +221,7 @@ fn eval_call<W: Write, E: Write>(
     read_hook: &mut String,
     core_hook: &mut String,
     eval_hook: &mut String,
+    err_hook: &mut String,
 ) {
     eval::<true, W, E>(
         &mut line,
@@ -232,6 +236,7 @@ fn eval_call<W: Write, E: Write>(
         read_hook,
         core_hook,
         eval_hook,
+        err_hook,
     )
 }
 
@@ -249,11 +254,12 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
     read_hook: &mut String,
     core_hook: &mut String,
     eval_hook: &mut String,
+    err_hook: &mut String,
 ) {
     if !eval_hook.is_empty() {
         //let status = exec_hooks(&split[1], "eval", &mut stderr);
         //let status = exec_hook(eval_hook, "", &mut stderr);
-        let status = exec_hook(eval_hook, "eval", line, &mut stderr);
+        let status = exec_hook(eval_hook, "eval", line, err_hook, &mut stderr);
         if status == 0 {
             line.clear();
             return;
@@ -279,7 +285,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             let f = File::open(path).expect("Expected file");
             input_stack.push(BufReader::new(f));
         } else {
-            err_write("source requires a path", &mut stderr);
+            err_write("source requires a path", err_hook, &mut stderr);
             if !*error_continue {
                 exit(1);
             }
@@ -302,7 +308,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         if let Some(c) = options.chars().next() {
             flag = c;
         } else {
-            err_write("no flag included in set", &mut stderr);
+            err_write("no flag included in set", err_hook, &mut stderr);
             if !*error_continue {
                 exit(1);
             }
@@ -316,7 +322,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 *error_continue = false;
             }
         } else {
-            err_write("you missed (or mispelt) an option in set", &mut stderr);
+            err_write("you missed (or mispelt) an option in set", err_hook, &mut stderr);
             if !*error_continue {
                 exit(1);
             }
@@ -326,7 +332,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
     } else if line.starts_with('e') {
         if line.starts_with("exec ") {
             externals::entry::exec(line.as_str()); // changes yom into said program
-            err_write("exec failed to overwrite process", &mut stderr);
+            err_write("exec failed to overwrite process", err_hook, &mut stderr);
             if !*error_continue {
                 exit(1);
             }
@@ -339,11 +345,11 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 // does a bit of trimming for quotes
                 let str = str.strip_prefix('"').unwrap();
                 let str = str.strip_suffix('"').unwrap();
-                builtins::echo::echo(str, &mut lock, &echo_hook, &mut stderr, *error_continue); // calls echo (handing the stdout lock over)
+                builtins::echo::echo(str, &mut lock, &echo_hook, err_hook, &mut stderr, *error_continue); // calls echo (handing the stdout lock over)
                 line.clear();
                 return;
             } else {
-                builtins::echo::echo(str, &mut lock, &echo_hook, &mut stderr, *error_continue); // calls echo (handing the stdout lock over)
+                builtins::echo::echo(str, &mut lock, &echo_hook, err_hook, &mut stderr, *error_continue); // calls echo (handing the stdout lock over)
                 line.clear();
                 return;
             }
@@ -360,7 +366,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             line.clear();
             return;
         } else if line == "exit" {
-            builtins::exit::exit(0, &exit_hook, &mut stderr, *error_continue); // calls exit on exit code 0
+            builtins::exit::exit(0, &exit_hook, err_hook, &mut stderr, *error_continue); // calls exit on exit code 0
             line.clear();
             return;
         } else if line.starts_with("exit ") {
@@ -368,11 +374,11 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             let val = str_or_int(code, code);
             if val == true {
                 let code: i32 = code.parse().unwrap_or(1); // trims "exit " and the newline, then parses it into i32
-                builtins::exit::exit(code, &exit_hook, &mut stderr, *error_continue); // executes exit on exit code specified in the file
+                builtins::exit::exit(code, &exit_hook, err_hook, &mut stderr, *error_continue); // executes exit on exit code specified in the file
                 line.clear();
                 return;
             } else {
-                err_write("exit requires an integer", &mut stderr);
+                err_write("exit requires an integer", err_hook, &mut stderr);
                 if !*error_continue {
                     exit(1);
                 }
@@ -380,7 +386,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
                 return;
             }
         } else {
-            err_write("syntax error", &mut stderr);
+            err_write("syntax error", err_hook, &mut stderr);
             if !*error_continue {
                 exit(1);
             }
@@ -392,17 +398,17 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         if dir.starts_with('"') && dir.ends_with('"') {
             let dir = dir.strip_prefix('"').unwrap(); // trims quotes from start shadowing old dir
             let dir = dir.strip_suffix('"').unwrap(); // trims quotes from start shadowing old dir
-            let _ = builtins::cd::cd(dir, &cd_hook, &mut stderr, *error_continue); // calls cd 
+            let _ = builtins::cd::cd(dir, &cd_hook, err_hook, &mut stderr, *error_continue); // calls cd 
             line.clear();
             return;
         } else {
-            let _ = builtins::cd::cd(dir, &cd_hook, &mut stderr, *error_continue); // calls cd 
+            let _ = builtins::cd::cd(dir, &cd_hook, err_hook, &mut stderr, *error_continue); // calls cd 
             line.clear();
             return;
         }
     } else if line == "pwd" {
         // echos the current working directory to stdout
-        let _ = builtins::pwd::pwd(&mut lock, &mut stderr, &pwd_hook); // calls pwd (handing stdout lock over)
+        let _ = builtins::pwd::pwd(&mut lock, err_hook, &mut stderr, &pwd_hook); // calls pwd (handing stdout lock over)
         line.clear();
         return;
     } else if line.starts_with("read ") {
@@ -624,8 +630,10 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             *read_hook = path.to_owned();
         } else if injected == "eval" {
             *eval_hook = path;
+        } else if injected == "err_write" {
+            *err_hook = path;
         } else {
-            err_write("hook not valid", stderr);
+            err_write("hook not valid", err_hook, &mut stderr);
             if !*error_continue {
                 exit(1);
             }
@@ -634,7 +642,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         line.clear();
         return;
     } else {
-        err_write("syntax error", &mut stderr);
+        err_write("syntax error", err_hook, &mut stderr);
         if !*error_continue {
             exit(1);
         }

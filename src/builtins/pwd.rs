@@ -21,12 +21,12 @@ use std::process::{Command, Stdio};
 /// ██▄▄█▀ ██ ▄█▄ ██ ██  ██
 /// ██      ▀██▀██▀  ████▀  
 /// Standard shell `pwd`
-pub fn pwd<W: Write, E: Write>(out: &mut W, stderr: &mut E, hook: &str) {
+pub fn pwd<W: Write, E: Write>(out: &mut W, err_hook: &str, stderr: &mut E, hook: &str) {
     if hook == "default" || hook == "" {
         if let Ok(pwd) = std::env::current_dir() {
             let _ = write!(out, "{}\n", pwd.display());
         } else {
-            err_write("failed to get current directory", stderr);
+            err_write("failed to get current directory", err_hook, stderr);
         }
     } else {
         let mut child = Command::new(hook)

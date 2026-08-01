@@ -44,4 +44,8 @@ v2.2.6 - 2.2.7
 
 v2.2.9 - v2.2.10
 ----------------------------------------------------------------------
-[FIXED] Fixed bug in where eval hook couldn't recieve more than one arg
+[FIXED] Fixed bug in where eval hook couldn't recieve more than one arg.
+
+v2.2.10 - v2.3.0
+----------------------------------------------------------------------
+[ADDED] Added the err_write hook.
