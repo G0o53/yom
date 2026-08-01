@@ -20,51 +20,29 @@
 
 use crate::err_write;
 use std::io::Write;
-use std::process::Stdio;
+use std::process::Command;
 
-/// ██████ ██  ██ ██████ ▄█████       ██  ██ ▄████▄ ▄████▄ ██ ▄█▀ ▄█████
-/// ██▄▄    ████  ██▄▄   ██           ██████ ██  ██ ██  ██ ████   ▀▀▀▄▄▄
-/// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████ ▄▄▄▄▄ ██  ██ ▀████▀ ▀████▀ ██ ▀█▄ █████▀
-/// `exec_hooks` executes the given hooks, it requires the `hooks`, `hook_name`
-/// which is the argument to give to the hooks, it requires `to_eval` which is what
-/// to give to the hooks as another argument, `err_continue` which is a bool that
+/// ██████ ██  ██ ██████ ▄█████       ██  ██ ▄████▄ ▄████▄ ██ ▄█▀
+/// ██▄▄    ████  ██▄▄   ██           ██████ ██  ██ ██  ██ ████  
+/// ██▄▄▄▄ ██  ██ ██▄▄▄▄ ▀█████ ▄▄▄▄▄ ██  ██ ▀████▀ ▀████▀ ██ ▀█▄
+/// `exec_hook` executes the given hook, it requires the path to the hook, 
+/// `hook_arg1` which is the first argument to give to the hooks,
+/// and it requires `hook_arg2` which is what to give to the hooks as another argument
 /// says if it is to continue on errors or not, and finally `stderr` which is a lock
 /// onto stderr.
-#[inline]
-pub fn exec_hooks<E: Write>(
-    hooks: &str,
-    hook_name: &str,
-    to_eval: &str,
-    err_continue: &mut bool,
-    stderr: &mut E,
-) -> i32 {
-    let split = shell_words::split(hooks).unwrap();
+pub fn exec_hook<E: Write>(path: &str, hook_arg1: &str, hook_arg2: &str, stderr: &mut E) -> i32 {
+    let mut child = Command::new(path)
+        .arg(hook_arg1)
+        .arg(hook_arg2)
+        .spawn()
+        .expect("Hook failed to start");
 
-    for path in split.iter() {
-        match std::process::Command::new(path)
-            .arg(&hook_name)
-            .stderr(Stdio::inherit())
-            .stdout(Stdio::inherit())
-            .stdin(Stdio::inherit())
-            .arg(to_eval)
-            .spawn()
-        {
-            Ok(mut child) => {
-                let status = child.wait();
-                match status.unwrap().code() {
-                    Some(code) => return code,
-                    None => return 1,
-                }
-            }
-
-            Err(_) => {
-                err_write("failed to spawn eval hook", stderr);
-                if !*err_continue {
-                    std::process::exit(1);
-                }
-                return 1;
-            }
-        }
-    }
-    return 1;
+    let status = child.wait().unwrap();
+    let exit_code = if let Some(c) = status.code() {
+        c
+    } else {
+        err_write("process terminated by signal", stderr);
+        return 1;
+    };
+    exit_code
 }

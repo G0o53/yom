@@ -250,10 +250,14 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
     core_hook: &mut String,
     eval_hook: &mut String,
 ) {
-    let status = exec_hooks(eval_hook, "eval", line, error_continue, &mut stderr);
-    if status == 0 {
-        line.clear();
-        return;
+    if !eval_hook.is_empty() {
+        //let status = exec_hooks(&split[1], "eval", &mut stderr);
+        //let status = exec_hook(eval_hook, "", &mut stderr);
+        let status = exec_hook(eval_hook, "eval", line, &mut stderr);
+        if status == 0 {
+            line.clear();
+            return;
+        }
     }
 
     if line.starts_with("#") || line == "" {
@@ -589,8 +593,8 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
     } else if line.starts_with("hook ") {
         let split = shell_words::split(&line).unwrap();
         let injected: &str = &split[1];
-        let path = &split[2..];
-        let mut path: String = path.join("");
+        let path = &split[2];
+        let mut path: String = path.to_string();
         if path.starts_with("~/") {
             path = path.strip_prefix("~").unwrap().to_string();
             if let Some(home_path) = home::home_dir() {
@@ -619,7 +623,7 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
             *pwd_hook = path.to_owned();
             *read_hook = path.to_owned();
         } else if injected == "eval" {
-            eval_hook.push_str(&path);
+            *eval_hook = path;
         } else {
             err_write("hook not valid", stderr);
             if !*error_continue {
