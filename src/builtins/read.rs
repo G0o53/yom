@@ -15,15 +15,21 @@
 
 use std::io::{self};
 use std::process::{Command, Stdio};
+use std::io::Write;
+use crate::err_write;
 
 /// █████▄  ██████ ▄████▄ ████▄  
 /// ██▄▄██▄ ██▄▄   ██▄▄██ ██  ██
 /// ██   ██ ██▄▄▄▄ ██  ██ ████▀  
 /// Standard shell `read`
 #[inline]
-pub fn read(var: &str, hook: &str) -> String {
+pub fn read<E: Write>(var: &str, err_hook: &str, err_continue: bool, hook: &str, stderr: &mut E) -> String {
     if hook == "default" || hook == "" {
-        let var = var.strip_prefix("$").expect("No $ before the variable");
+        let Some(var) = var.strip_prefix("$") else { 
+            err_write("no $ before variable", err_hook, stderr);
+            if !err_continue { std::process::exit(1); }
+            return String::new();
+        };
         let mut var: String = std::env::var(var).unwrap_or_else(|_| String::new());
 
         io::stdin()
@@ -32,7 +38,11 @@ pub fn read(var: &str, hook: &str) -> String {
         var = var.strip_suffix("\n").unwrap_or(&var).to_string();
         var
     } else {
-        let var = var.strip_prefix("$").expect("No $ before the variable");
+        let Some(var) = var.strip_prefix("$") else { 
+            err_write("no $ before variable", err_hook, stderr);
+            if !err_continue { std::process::exit(1); }
+            return String::new();
+        };
         let output = Command::new(hook)
             .arg("read")
             .arg(var)

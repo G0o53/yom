@@ -416,14 +416,14 @@ fn eval<const NO_INLINE: bool, W: Write, E: Write>(
         if prompt.starts_with('"') && prompt.ends_with('"') {
             let prompt = prompt.strip_prefix('"').unwrap(); // trims quotes
             let prompt = prompt.strip_suffix('"').unwrap(); // trims quotes while shadowing old prompt
-            let val = builtins::read::read(prompt, &read_hook); // executes read
+            let val = builtins::read::read(prompt, err_hook, *error_continue, &read_hook, &mut stderr); // executes read
             unsafe {
                 std::env::set_var(prompt, val);
             }
             line.clear();
             return;
         } else {
-            let val = builtins::read::read(prompt, &read_hook); // executes read
+            let val = builtins::read::read(prompt, err_hook, *error_continue, &read_hook, &mut stderr); // executes read
             unsafe {
                 std::env::set_var(prompt, val);
             }
