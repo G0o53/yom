@@ -86,16 +86,10 @@ you choose.
 
 # Documentation
 
-Depending on how you installed it, `YOM` will either have documentation (man pages) installed on your system, or you will have to find them manually, 
-if you used any of the `brew` methods or the `make install`, then you have man pages to view, to use, simply do
-```bash
-man yom
-```
-for the general manual, for the hooks API manual, do
-```bash
-man yom-hooks
-```
-if you installed it using another method, you will find the manual at `docs/yom.1` and `docs/yom-hooks.3`
+- [YOMDOCSONL](https://g0o53.github.io/yomdocsonl) (For online documentation)
+- If you have installed yom with `make` or `brew`, man pages should be installed on your system. (`man yom` and `man yom-hooks`)
+- If you installed with `cargo`, download them from [here](https://github.com/G0o53/yom/tree/master/docs)
+- if you installed it using another method, you will find the manual at `docs/yom.1` and `docs/yom-hooks.3`
 
 </details>
 
