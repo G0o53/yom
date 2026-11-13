@@ -30,6 +30,7 @@ use std::process::Command;
 /// and it requires `hook_arg2` which is what to give to the hooks as another argument
 /// says if it is to continue on errors or not, it also needs `err_hook` which is a `&str`
 /// saying what the err_write hook is, and finally `stderr` which is a lock onto stderr.
+#[inline]
 pub fn exec_hook<E: Write>(path: &str, hook_arg1: &str, hook_arg2: &str, err_hook: &str, stderr: &mut E) -> i32 {
     let mut child = Command::new(path)
         .arg(hook_arg1)
