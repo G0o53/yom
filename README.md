@@ -2,6 +2,7 @@
 
 [![Static Badge](https://img.shields.io/badge/YOM-github.com-blueviolet)](https://github.com/G0o53/yom)
 [![Static Badge](https://img.shields.io/badge/YOM-crates.io-orange)](https://crates.io/crates/yom)
+[![Static Badge](https://img.shields.io/badge/YOMDOCS-ONL-green)](https://g0o53.github.io/yomdocsonl)
 
 YOM is the fast, almost scary fast, dash competitor (even though it can only 
 execute scripts!). While dash is a nightmare to install, YOM isn't.
@@ -96,6 +97,7 @@ you choose.
 <details>
 <summary>License</summary>
 <br>
+
 YOM is licensed under the `GPL-v2` license only.
 
 </details>
